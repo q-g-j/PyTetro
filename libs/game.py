@@ -172,13 +172,13 @@ class Game:
             if len(row_blocks_rect_list) == 12:
                 for colliding_sprite in row_blocks_rect_list:
                     colliding_sprite.kill()
-                self.drop_after_remove(_all_sprites, row * TETROMINO_SIZE)
+                self.__drop_after_remove(_all_sprites, row * TETROMINO_SIZE)
 
         self.screen.fill(Colors.SCREEN)
         _all_sprites.draw(self.screen)
 
     @staticmethod
-    def drop_after_remove(_all_sprites, _row):
+    def __drop_after_remove(_all_sprites, _row):
         for tetromino in _all_sprites:
             if type(tetromino) != FrameBlock:
                 if tetromino.rect.y < _row:
