@@ -56,17 +56,6 @@ class Tetromino(pg.sprite.Sprite):
         self.image.set_colorkey(Colors.BLACK)
         self.mask = pg.mask.from_surface(self.image)
 
-    def clear_single_block(self):
-        self.image = pg.Surface((self.tetromino_size, self.tetromino_size))
-        pg.draw.rect(self.image,
-                     color=Colors.TetroS.fg_square,
-                     rect=(0,
-                           0,
-                           self.tetromino_size,
-                           self.tetromino_size))
-
-        self.mask = pg.mask.from_surface(self.image)
-
     def is_block_in_tetromino(self, rect):
         if self.rect.x + self.image.get_width() >= rect.x >= self.rect.x and \
                 self.rect.y + self.image.get_height() >= rect.y >= self.rect.y:
