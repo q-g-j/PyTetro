@@ -18,7 +18,7 @@ class Colors:
 
     # Blue:
     class TetroStraight:
-        bg_topleft = (179, 209, 255)
+        bg_topleft = (128, 179, 255)
         bg_bottomright = (0, 51, 128)
         fg_square = (0, 102, 255)
 
@@ -30,11 +30,11 @@ class Colors:
 
     # Orange:
     class TetroT:
-        bg_topleft = (255, 191, 128)
-        bg_bottomright = (128, 83, 0)
-        fg_square = (255, 128, 0)
+        bg_topleft = (255, 204, 128)
+        bg_bottomright = (153, 92, 0)
+        fg_square = (255, 153, 0)
 
-    # Brown:
+    # Red:
     class TetroL:
         bg_topleft = (255, 179, 179)
         bg_bottomright = (153, 0, 0)

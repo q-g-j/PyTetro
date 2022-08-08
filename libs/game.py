@@ -8,11 +8,16 @@ from libs.tetrominos import *
 class Game:
     def __init__(self):
         pg.init()
-        self.clock = pg.time.Clock()
-        self.screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        self.all_sprites = pg.sprite.Group()
-        self.all_sprites_list = []
         pg.key.set_repeat(300, 20)
+        self.clock = pg.time.Clock()
+        self.tetromino_size, self.screen_width, self.screen_height = self.__compute_sizes()
+        self.screen = pg.display.set_mode((self.screen_width, self.screen_height))
+        self.playing_area_top = 0
+        self.playing_area_left = self.tetromino_size
+        self.playing_area_right = self.screen_width - self.tetromino_size
+        self.playing_area_bottom = self.screen_height - self.tetromino_size
+        self.all_sprites = pg.sprite.Group()
+        self.all_sprites_list = list()
         self.drop_counter = 0
 
     def start(self):
@@ -30,25 +35,39 @@ class Game:
                 rand_int = randint(1, 7)
 
                 if rand_int == 1:
-                    current_tetromino = Straight(self.screen, self.all_sprites)
+                    current_tetromino = Straight(self.screen, self.playing_area_bottom,
+                                                 self.playing_area_left, self.playing_area_right,
+                                                 self.tetromino_size, self.all_sprites)
                 elif rand_int == 2:
-                    current_tetromino = Square(self.screen, self.all_sprites)
+                    current_tetromino = Square(self.screen, self.playing_area_bottom,
+                                               self.playing_area_left, self.playing_area_right,
+                                               self.tetromino_size, self.all_sprites)
                 elif rand_int == 3:
-                    current_tetromino = T(self.screen, self.all_sprites)
+                    current_tetromino = T(self.screen, self.playing_area_bottom,
+                                          self.playing_area_left, self.playing_area_right,
+                                          self.tetromino_size, self.all_sprites)
                 elif rand_int == 4:
-                    current_tetromino = L(self.screen, self.all_sprites)
+                    current_tetromino = L(self.screen, self.playing_area_bottom,
+                                          self.playing_area_left, self.playing_area_right,
+                                          self.tetromino_size, self.all_sprites)
                 elif rand_int == 5:
-                    current_tetromino = J(self.screen, self.all_sprites)
+                    current_tetromino = J(self.screen, self.playing_area_bottom,
+                                          self.playing_area_left, self.playing_area_right,
+                                          self.tetromino_size, self.all_sprites)
                 elif rand_int == 6:
-                    current_tetromino = S(self.screen, self.all_sprites)
+                    current_tetromino = S(self.screen, self.playing_area_bottom,
+                                          self.playing_area_left, self.playing_area_right,
+                                          self.tetromino_size, self.all_sprites)
                 elif rand_int == 7:
-                    current_tetromino = Z(self.screen, self.all_sprites)
+                    current_tetromino = Z(self.screen, self.playing_area_bottom,
+                                          self.playing_area_left, self.playing_area_right,
+                                          self.tetromino_size, self.all_sprites)
 
                 current_tetromino.rect.x = \
-                    int(SCREEN_WIDTH / 2) - \
-                    int((current_tetromino.image.get_width() / TETROMINO_SIZE) / 2) * \
-                    TETROMINO_SIZE
-                current_tetromino.rect.y = PLAYING_AREA_TOP
+                    int(self.screen_width / 2) - \
+                    int((current_tetromino.image.get_width() / self.tetromino_size) / 2) * \
+                    self.tetromino_size
+                current_tetromino.rect.y = self.playing_area_top
                 self.all_sprites.add(current_tetromino)
 
             elif Tetromino.would_collide(current_tetromino, self.all_sprites):
@@ -112,25 +131,25 @@ class Game:
                 self.clock.tick(25)
 
     def __create_frame(self):
-        for i in range(0, int(PLAYING_AREA_RIGHT / TETROMINO_SIZE) + TETROMINO_SIZE):
-            frame_block = FrameBlock(self.screen)
-            frame_block.rect.x = i * TETROMINO_SIZE
+        for i in range(0, int(self.playing_area_right / self.tetromino_size) + self.tetromino_size):
+            frame_block = FrameBlock(self.screen, self.tetromino_size)
+            frame_block.rect.x = i * self.tetromino_size
             frame_block.rect.y = -40
             self.all_sprites.add(frame_block)
-        for i in range(0, int(PLAYING_AREA_RIGHT / TETROMINO_SIZE) + TETROMINO_SIZE):
-            frame_block = FrameBlock(self.screen)
-            frame_block.rect.x = i * TETROMINO_SIZE
-            frame_block.rect.y = 21 * TETROMINO_SIZE + 40
+        for i in range(0, int(self.playing_area_right / self.tetromino_size) + self.tetromino_size):
+            frame_block = FrameBlock(self.screen, self.tetromino_size)
+            frame_block.rect.x = i * self.tetromino_size
+            frame_block.rect.y = 21 * self.tetromino_size + 40
             self.all_sprites.add(frame_block)
         for i in range(0, 22):
-            frame_block = FrameBlock(self.screen)
+            frame_block = FrameBlock(self.screen, self.tetromino_size)
             frame_block.rect.x = 0
-            frame_block.rect.y = i * TETROMINO_SIZE
+            frame_block.rect.y = i * self.tetromino_size
             self.all_sprites.add(frame_block)
         for i in range(0, 22):
-            frame_block = FrameBlock(self.screen)
-            frame_block.rect.x = int(PLAYING_AREA_RIGHT / TETROMINO_SIZE) * TETROMINO_SIZE
-            frame_block.rect.y = i * TETROMINO_SIZE
+            frame_block = FrameBlock(self.screen, self.tetromino_size)
+            frame_block.rect.x = int(self.playing_area_right / self.tetromino_size) * self.tetromino_size
+            frame_block.rect.y = i * self.tetromino_size
             self.all_sprites.add(frame_block)
 
     def __change_tetromino_to_single_blocks(self, _tetromino: Tetromino, _all_sprites):
@@ -150,12 +169,14 @@ class Game:
         elif type(_tetromino) == Z:
             color = Colors.TetroZ
 
-        for x in range(_tetromino.rect.x, _tetromino.rect.x + _tetromino.image.get_width(), TETROMINO_SIZE):
-            for y in range(_tetromino.rect.y, _tetromino.rect.y + _tetromino.image.get_height(), TETROMINO_SIZE):
-                rect = pg.rect.Rect((x, y, TETROMINO_SIZE, TETROMINO_SIZE))
-                sprite = SingleBlock(self.screen, _all_sprites, color)
+        for x in range(_tetromino.rect.x, _tetromino.rect.x + _tetromino.image.get_width(), self.tetromino_size):
+            for y in range(_tetromino.rect.y, _tetromino.rect.y + _tetromino.image.get_height(), self.tetromino_size):
+                rect = pg.rect.Rect((x, y, self.tetromino_size, self.tetromino_size))
+                sprite = SingleBlock(self.screen, self.playing_area_bottom,
+                                     self.playing_area_left, self.playing_area_right,
+                                     self.tetromino_size, self.all_sprites, color)
                 sprite.rect = rect
-                does_collide, colliding_sprite = Tetromino.does_collide(sprite, _all_sprites)
+                does_collide, colliding_sprite = sprite.does_collide(_all_sprites)
                 if does_collide and type(colliding_sprite) != FrameBlock and type(colliding_sprite) != SingleBlock:
                     _all_sprites.add(sprite)
         _tetromino.kill()
@@ -164,11 +185,14 @@ class Game:
         _all_sprites.draw(self.screen)
 
     def __remove_full_rows(self, _all_sprites):
-        for row in range(1, int(PLAYING_AREA_BOTTOM / TETROMINO_SIZE) + 1):
+        for row in range(1, int(self.playing_area_bottom / self.tetromino_size) + 1):
             row_blocks_rect_list = []
-            for col in range(1, int(PLAYING_AREA_RIGHT / TETROMINO_SIZE)):
-                rect = pg.rect.Rect((col * TETROMINO_SIZE, row * TETROMINO_SIZE, TETROMINO_SIZE, TETROMINO_SIZE))
-                sprite = SingleBlock(self.screen, _all_sprites, Colors.TetroSquare)
+            for col in range(1, int(self.playing_area_right / self.tetromino_size)):
+                rect = pg.rect.Rect((col * self.tetromino_size, row * self.tetromino_size,
+                                     self.tetromino_size, self.tetromino_size))
+                sprite = SingleBlock(self.screen, self.playing_area_bottom,
+                                     self.playing_area_left, self.playing_area_right,
+                                     self.tetromino_size, self.all_sprites, Colors.TetroSquare)
                 sprite.rect = rect
                 does_collide, colliding_sprite = Tetromino.does_collide(sprite, _all_sprites)
                 if does_collide:
@@ -177,7 +201,7 @@ class Game:
             if len(row_blocks_rect_list) == 12:
                 for colliding_sprite in row_blocks_rect_list:
                     colliding_sprite.kill()
-                self.__drop_after_remove(_all_sprites, row * TETROMINO_SIZE)
+                self.__drop_after_remove(_all_sprites, row * self.tetromino_size)
 
         self.screen.fill(Colors.SCREEN)
         _all_sprites.draw(self.screen)
@@ -187,4 +211,15 @@ class Game:
         for tetromino in _all_sprites:
             if type(tetromino) != FrameBlock:
                 if tetromino.rect.y < _row:
+
                     tetromino.move_down_force()
+
+    @staticmethod
+    def __compute_sizes():
+        screen_height = int(round(pg.display.Info().current_h * (2 / 3)))
+        tetromino_size = int(round(screen_height / 22))
+        if tetromino_size % 2 == 0:
+            tetromino_size += 1
+        screen_width = tetromino_size * 12 + 2 * tetromino_size
+        screen_height = tetromino_size * 20 + 2 * tetromino_size
+        return tetromino_size, screen_width, screen_height
