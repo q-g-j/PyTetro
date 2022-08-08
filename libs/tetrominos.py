@@ -56,12 +56,6 @@ class Tetromino(pg.sprite.Sprite):
         self.image.set_colorkey(Colors.BLACK)
         self.mask = pg.mask.from_surface(self.image)
 
-    def is_block_in_tetromino(self, rect):
-        if self.rect.x + self.image.get_width() >= rect.x >= self.rect.x and \
-                self.rect.y + self.image.get_height() >= rect.y >= self.rect.y:
-            return True, self
-        return False, self
-
     def __rotate(self, _direction):
         if _direction == 'left':
             self.current_shape = self.current_shape - 1 if self.current_shape > 0 else 3
