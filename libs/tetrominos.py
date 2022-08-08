@@ -49,7 +49,7 @@ class Tetromino(pg.sprite.Sprite):
         self.mask = pg.mask.from_surface(self.image)
 
     def clear_single_block(self):
-        self.image = pg.Surface((35, 35))
+        self.image = pg.Surface((TETROMINO_SIZE, TETROMINO_SIZE))
         pg.draw.rect(self.image,
                      color=Colors.TetroS.fg_square,
                      rect=(0,

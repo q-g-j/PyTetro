@@ -13,6 +13,7 @@ class Game:
         self.all_sprites = pg.sprite.Group()
         self.all_sprites_list = []
         pg.key.set_repeat(300, 20)
+        self.drop_counter = 0
 
     def start(self):
         self.__create_frame()
@@ -58,6 +59,10 @@ class Game:
                 self.__change_tetromino_to_single_blocks(current_tetromino, self.all_sprites)
                 self.__remove_full_rows(self.all_sprites)
                 current_tetromino = None
+                continue
+
+            if self.drop_counter != 0 and self.drop_counter < 15:
+                self.drop_counter += 1
                 continue
 
             for event in pg.event.get():
@@ -177,8 +182,8 @@ class Game:
         self.screen.fill(Colors.SCREEN)
         _all_sprites.draw(self.screen)
 
-    @staticmethod
-    def __drop_after_remove(_all_sprites, _row):
+    def __drop_after_remove(self, _all_sprites, _row):
+        self.drop_counter = 1
         for tetromino in _all_sprites:
             if type(tetromino) != FrameBlock:
                 if tetromino.rect.y < _row:
