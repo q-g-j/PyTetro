@@ -29,19 +29,19 @@ class Game:
         is_key_up_pressed = False
         current_tetromino = None
         self.__fps = 60
-        speed = 1
+        speed = 2
         pg.key.set_repeat(200, 50)
-
-        counter = 0
-        at_bottom_counter = 0
         game_over_tetromino_nums = [2, 5, 3, 1, 4, 7, 6]
+
+        move_down_counter = 0
+        at_bottom_counter = 0
+        drop_counter = 0
         has_lost_counter = 0
         print_game_over_counter = 0
-        self.__drop_counter = 0
 
         running = True
         while running:
-            if print_game_over_counter == 0:
+            if print_game_over_counter == 0 and at_bottom_counter == 0:
                 if current_tetromino is None:
                     if has_lost_counter != 0:
                         tetromino_num_index = int(has_lost_counter / int(round(self.__fps / 2)))
@@ -54,7 +54,7 @@ class Game:
                         if does_collide:
                             has_lost_counter = 1
                 elif current_tetromino.would_collide(self.__all_sprites) and has_lost_counter == 0:
-                    at_bottom_counter += 1
+                    at_bottom_counter = 1
 
             if has_lost_counter != 0:
                 has_lost_counter += 1
@@ -66,10 +66,7 @@ class Game:
                         if type(tetromino) != FrameBlock:
                             tetromino.kill()
                     print_game_over_counter = 1
-                    self.__screen.fill(Colors.SCREEN)
-                    self.__all_sprites.draw(self.__screen)
                     self.__print_game_over()
-                    pg.display.update()
 
             if print_game_over_counter != 0:
                 print_game_over_counter += 1
@@ -77,29 +74,28 @@ class Game:
                     print_game_over_counter = 0
 
             if has_lost_counter == 0 and print_game_over_counter == 0:
-                if counter != 0 and counter % int(round(self.__fps / (speed * 2))) == 0:
+                if move_down_counter != 0 and move_down_counter % int(round(self.__fps / (speed * 1.5))) == 0:
                     current_tetromino.move_down()
-                    counter = 0
+                    move_down_counter = 0
 
-                if at_bottom_counter == int(round(self.__fps / 2)):
-                    at_bottom_counter = 0
-                    self.__change_tetromino_to_single_blocks(current_tetromino, self.__all_sprites)
-                    self.__remove_full_rows(self.__all_sprites)
-                    current_tetromino = None
-                    self.__clock.tick(self.__fps)
-                    continue
+                if at_bottom_counter != 0:
+                    at_bottom_counter += 1
+                    if at_bottom_counter == int(round(self.__fps / 3)):
+                        self.__change_tetromino_to_single_blocks(current_tetromino, self.__all_sprites)
+                        if self.__remove_full_rows(self.__all_sprites):
+                            drop_counter = 1
+                        at_bottom_counter = 0
+                        current_tetromino = None
 
-                if self.__drop_counter != 0 and self.__drop_counter < int(round(self.__fps / 2)):
-                    self.__drop_counter += 1
-                    self.__clock.tick(self.__fps)
-                    continue
-                elif self.__drop_counter == int(round(self.__fps / 2)):
-                    self.__drop_counter = 0
+                if drop_counter != 0 and drop_counter < int(round(self.__fps / 4)):
+                    drop_counter += 1
+                elif drop_counter == int(round(self.__fps / 4)):
+                    drop_counter = 0
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     running = False
-                if has_lost_counter == 0 and print_game_over_counter == 0:
+                if current_tetromino is not None and has_lost_counter == 0 and print_game_over_counter == 0:
                     if event.type == pg.KEYUP:
                         is_key_up_pressed = False
                     elif event.type == pg.KEYDOWN:
@@ -121,7 +117,7 @@ class Game:
                 self.__screen.fill(Colors.SCREEN)
                 self.__all_sprites.draw(self.__screen)
                 pg.display.update()
-                counter += 1
+                move_down_counter += 1
 
             self.__clock.tick(self.__fps)
 
@@ -223,6 +219,7 @@ class Game:
         _all_sprites.draw(self.__screen)
 
     def __remove_full_rows(self, _all_sprites):
+        has_removed = False
         for row in range(1, int(self.__playing_area_bottom / self.__tetromino_size) + 1):
             row_blocks_rect_list = []
             for col in range(1, int(self.__playing_area_right / self.__tetromino_size)):
@@ -237,6 +234,7 @@ class Game:
                     row_blocks_rect_list.append(colliding_sprite)
 
             if len(row_blocks_rect_list) == 12:
+                has_removed = True
                 for colliding_sprite in row_blocks_rect_list:
                     colliding_sprite.kill()
                 self.__drop_after_remove(_all_sprites, row * self.__tetromino_size)
@@ -244,12 +242,13 @@ class Game:
         self.__screen.fill(Colors.SCREEN)
         _all_sprites.draw(self.__screen)
 
-    def __drop_after_remove(self, _all_sprites, _row):
-        self.__drop_counter = 1
+        return has_removed
+
+    @staticmethod
+    def __drop_after_remove(_all_sprites, _row):
         for tetromino in _all_sprites:
             if type(tetromino) != FrameBlock:
                 if tetromino.rect.y < _row:
-
                     tetromino.move_down_force()
 
     @staticmethod
@@ -269,4 +268,7 @@ class Game:
         height = text_surface.get_height()
         x = int(round(self.__screen_width / 2)) - int(round(width / 2))
         y = int(round(self.__screen_height / 3)) - int(round(height / 2))
+        self.__screen.fill(Colors.SCREEN)
+        self.__all_sprites.draw(self.__screen)
         self.__screen.blit(text_surface, (x, y))
+        pg.display.update()
