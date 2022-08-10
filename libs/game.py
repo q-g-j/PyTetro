@@ -2,6 +2,8 @@
 
 import uuid
 import random
+
+from libs.fonts import *
 from libs.frame import *
 from libs.tetrominos import *
 
@@ -12,6 +14,7 @@ class Game:
         self.__random = random.Random()
         self.__random.seed(uuid.uuid4().int)
         self.__clock = pg.time.Clock()
+        self.__fonts = Fonts()
         self.__tetromino_size, self.__screen_width, self.__screen_height = self.__compute_sizes()
         self.__screen = pg.display.set_mode((self.__screen_width, self.__screen_height))
         self.__playing_area_top = 0
@@ -31,7 +34,7 @@ class Game:
         self.__fps = 60
         speed = 2
         pg.key.set_repeat(200, 50)
-        game_over_tetromino_nums = [2, 5, 3, 1, 4, 7, 6]
+        game_over_tetromino_nums = [x for x in range(1, 8)]
 
         move_down_counter = 0
         at_bottom_counter = 0
@@ -95,7 +98,7 @@ class Game:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     running = False
-                if current_tetromino is not None and has_lost_counter == 0 and print_game_over_counter == 0:
+                if running and current_tetromino is not None and has_lost_counter == 0 and print_game_over_counter == 0:
                     if event.type == pg.KEYUP:
                         is_key_up_pressed = False
                     elif event.type == pg.KEYDOWN:
@@ -262,8 +265,7 @@ class Game:
         return tetromino_size, screen_width, screen_height
 
     def __print_game_over(self):
-        font = pg.font.SysFont(name="Arial", size=60, bold=True)
-        text_surface = font.render("Game Over!", True, Colors.RED)
+        text_surface = self.__fonts.game_over.render("Game Over", True, Colors.RED)
         width = text_surface.get_width()
         height = text_surface.get_height()
         x = int(round(self.__screen_width / 2)) - int(round(width / 2))
