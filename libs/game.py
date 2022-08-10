@@ -84,11 +84,12 @@ class Game:
                 if at_bottom_counter != 0:
                     at_bottom_counter += 1
                     if at_bottom_counter == int(round(self.__fps / 3)):
-                        self.__change_tetromino_to_single_blocks(current_tetromino, self.__all_sprites)
-                        if self.__remove_full_rows(self.__all_sprites):
-                            drop_counter = 1
+                        if current_tetromino.would_collide(self.__all_sprites):
+                            self.__change_tetromino_to_single_blocks(current_tetromino, self.__all_sprites)
+                            if self.__remove_full_rows(self.__all_sprites):
+                                drop_counter = 1
+                            current_tetromino = None
                         at_bottom_counter = 0
-                        current_tetromino = None
 
                 if drop_counter != 0 and drop_counter < int(round(self.__fps / 4)):
                     drop_counter += 1
