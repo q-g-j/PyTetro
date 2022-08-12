@@ -8,7 +8,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[('libs', 'libs'), ('fonts', 'fonts')],
+    datas=[('fonts', 'fonts')],
     hiddenimports=['pygame'],
     hookspath=[],
     hooksconfig={},
