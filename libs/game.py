@@ -70,7 +70,8 @@ class Game:
 
             if is_running \
                     and counter_print_game_over == 0 \
-                    and counter_at_bottom == 0:
+                    and counter_at_bottom == 0 \
+                    and counter_drop == 0:
                 if current_tetromino is None:
                     if counter_has_lost != 0:
                         tetromino_num_index = int(counter_has_lost / int(round(self.__fps / 2)))
@@ -85,6 +86,8 @@ class Game:
                             counter_has_lost = 1
                 elif current_tetromino.would_collide(self.__all_sprites) and counter_has_lost == 0:
                     counter_at_bottom = 1
+
+                counter_move_down += 1
 
             if is_running \
                     and counter_has_lost != 0:
@@ -106,9 +109,10 @@ class Game:
                     counter_print_game_over = 0
 
             if is_running \
-                    and counter_has_lost == 0 \
-                    and counter_print_game_over == 0:
-                if counter_move_down != 0 and counter_move_down % int(round(self.__fps / (speed * 1.5))) == 0:
+                    and counter_move_down != 0:
+                if counter_has_lost == 0 \
+                        and counter_print_game_over == 0 \
+                        and counter_move_down % int(self.__fps / speed) == 0:
                     current_tetromino.move_down()
                     counter_move_down = 0
 
@@ -122,20 +126,19 @@ class Game:
                             counter_drop = 1
                         current_tetromino = None
                     counter_at_bottom = 0
+                    counter_move_down = 0
 
             if is_running \
-                    and counter_drop != 0 \
-                    and counter_drop < int(round(self.__fps / 4)):
+                    and counter_drop != 0:
                 counter_drop += 1
-            elif counter_drop == int(round(self.__fps / 4)):
-                counter_drop = 0
+                if counter_drop == int(round(self.__fps / 3)):
+                    counter_drop = 0
 
             if is_running \
                     and counter_print_game_over == 0:
                 self.__screen.fill(Colors.SCREEN)
                 self.__all_sprites.draw(self.__screen)
                 pg.display.update()
-                counter_move_down += 1
 
             if is_running:
                 self.__clock.tick(self.__fps)
