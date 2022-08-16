@@ -1,22 +1,18 @@
 # -*- coding: utf-8 -*-
 
 import pygame as pg
-from libs.colors import *
+import libs.colors as colors
 
 
 class Tetromino(pg.sprite.Sprite):
-    def __init__(self, _screen, _playing_area_bottom, _playing_area_left,
-                 _playing_area_right, _block_size, _all_sprites, _color):
+    def __init__(self, _window, _constants, _all_sprites, _color):
         super(Tetromino, self).__init__()
-        self.playing_area_bottom = _playing_area_bottom
-        self.playing_area_left = _playing_area_left
-        self.playing_area_right = _playing_area_right
-        self.block_size = _block_size
+        self.constants = _constants
         self.shapes = list()
         self.shape_widths = list()
         self.shape_heights = list()
         self.current_shape = 0
-        self.screen = _screen
+        self.window = _window
         self.color = _color
         self.mask = None
         self.all_sprites = _all_sprites
@@ -25,35 +21,38 @@ class Tetromino(pg.sprite.Sprite):
         num_blocks_hori = len(self.shapes[self.current_shape][0])
         num_blocks_verti = len(self.shapes[self.current_shape])
 
-        self.image = pg.Surface((num_blocks_hori * self.block_size,
-                                 num_blocks_verti * self.block_size))
+        self.image = pg.Surface((num_blocks_hori * self.constants.block_size,
+                                 num_blocks_verti * self.constants.block_size))
 
         for j in range(num_blocks_verti):
             for i in range(num_blocks_hori):
                 if self.shapes[self.current_shape][j][i]:
                     pg.draw.polygon(
                         surface=self.image, color=self.color.bg_topleft,
-                        points=[(0 + i * self.block_size, (self.block_size - 1) + j * self.block_size),
-                                (0 + i * self.block_size, 0 + j * self.block_size),
-                                ((self.block_size - 1) + i * self.block_size, 0 + j * self.block_size)]
+                        points=[(i * self.constants.block_size,
+                                 (self.constants.block_size - 1) + j * self.constants.block_size),
+                                (i * self.constants.block_size,
+                                 j * self.constants.block_size),
+                                ((self.constants.block_size - 1) + i * self.constants.block_size,
+                                 j * self.constants.block_size)]
                     )
                     pg.draw.polygon(
                         surface=self.image, color=self.color.bg_bottomright,
-                        points=[(0 + i * self.block_size,
-                                 (self.block_size - 1) + j * self.block_size),
-                                ((self.block_size - 1) + i * self.block_size,
-                                 0 + j * self.block_size),
-                                ((self.block_size - 1) + i * self.block_size,
-                                 (self.block_size - 1) + j * self.block_size)]
+                        points=[(i * self.constants.block_size,
+                                 (self.constants.block_size - 1) + j * self.constants.block_size),
+                                ((self.constants.block_size - 1) + i * self.constants.block_size,
+                                 j * self.constants.block_size),
+                                ((self.constants.block_size - 1) + i * self.constants.block_size,
+                                 (self.constants.block_size - 1) + j * self.constants.block_size)]
                     )
                     pg.draw.rect(self.image,
                                  color=self.color.fg_square,
-                                 rect=(int(round(self.block_size / 8)) + i * self.block_size,
-                                       int(round(self.block_size / 8)) + j * self.block_size,
-                                       int(round(self.block_size / (4 / 3))),
-                                       int(round(self.block_size / (4 / 3)))))
+                                 rect=(int(round(self.constants.block_size / 8)) + i * self.constants.block_size,
+                                       int(round(self.constants.block_size / 8)) + j * self.constants.block_size,
+                                       int(round(self.constants.block_size / (4 / 3))),
+                                       int(round(self.constants.block_size / (4 / 3)))))
 
-        self.image.set_colorkey(Colors.BLACK)
+        self.image.set_colorkey(colors.Constants.BLACK)
         self.mask = pg.mask.from_surface(self.image)
 
     def __rotate(self, _direction):
@@ -62,15 +61,15 @@ class Tetromino(pg.sprite.Sprite):
         else:
             self.current_shape = self.current_shape + 1 if self.current_shape < 3 else 0
 
-        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.block_size,
-                                 len(self.shapes[self.current_shape]) * self.block_size))
+        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.constants.block_size,
+                                 len(self.shapes[self.current_shape]) * self.constants.block_size))
         self.draw()
 
     def rotate_right(self):
         self.__rotate('right')
-        if self.rect.y > self.playing_area_bottom - self.image.get_height() or \
-                self.rect.x < self.playing_area_left or \
-                self.rect.x > self.playing_area_right - self.image.get_width():
+        if self.rect.y > self.constants.playing_area_bottom - self.image.get_height() or \
+                self.rect.x < self.constants.playing_area_left or \
+                self.rect.x > self.constants.playing_area_right - self.image.get_width():
             self.__rotate('left')
         else:
             does_collide, colliding_sprite = self.does_collide(self.all_sprites)
@@ -78,28 +77,28 @@ class Tetromino(pg.sprite.Sprite):
                 self.__rotate('left')
 
     def move_left(self):
-        self.rect.x -= self.block_size
+        self.rect.x -= self.constants.block_size
         does_collide, colliding_sprite = self.does_collide(self.all_sprites)
         if does_collide:
-            self.rect.x += self.block_size
+            self.rect.x += self.constants.block_size
 
     def move_right(self):
-        self.rect.x += self.block_size
+        self.rect.x += self.constants.block_size
         does_collide, colliding_sprite = self.does_collide(self.all_sprites)
         if does_collide:
-            self.rect.x -= self.block_size
+            self.rect.x -= self.constants.block_size
 
     def move_down(self):
-        self.rect.y += self.block_size
+        self.rect.y += self.constants.block_size
         does_collide, colliding_sprite = self.does_collide(self.all_sprites)
         if does_collide:
-            self.rect.y -= self.block_size
+            self.rect.y -= self.constants.block_size
 
     def move_down_force(self):
-        self.rect.y += self.block_size
+        self.rect.y += self.constants.block_size
 
     def is_bottom(self):
-        if self.rect.y == self.playing_area_bottom - self.image.get_height():
+        if self.rect.y == self.constants.playing_area_bottom - self.image.get_height():
             return True
         return False
 
@@ -112,27 +111,25 @@ class Tetromino(pg.sprite.Sprite):
         return False, None
 
     def would_collide(self, _sprite_group):
-        self.rect.y += self.block_size
+        self.rect.y += self.constants.block_size
         does_collide, colliding_sprite = self.does_collide(_sprite_group)
         if does_collide:
-            self.rect.y -= self.block_size
+            self.rect.y -= self.constants.block_size
             return True
-        self.rect.y -= self.block_size
+        self.rect.y -= self.constants.block_size
         return False
 
 
 class SingleBlock(Tetromino):
-    def __init__(self, _screen, _playing_area_bottom, _playing_area_left,
-                 _playing_area_right, _block_size, _all_sprites, _color):
-        super(SingleBlock, self).__init__(_screen, _playing_area_bottom, _playing_area_left,
-                                          _playing_area_right, _block_size, _all_sprites, _color)
+    def __init__(self, _window, _constants, _all_sprites, _color):
+        super(SingleBlock, self).__init__(_window, _constants, _all_sprites, _color)
         self.shapes = [
             [
                 [1]
             ]
         ]
-        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.block_size,
-                                 len(self.shapes[self.current_shape]) * self.block_size))
+        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.constants.block_size,
+                                 len(self.shapes[self.current_shape]) * self.constants.block_size))
         self.rect = self.image.get_rect()
         self.draw()
 
@@ -144,10 +141,8 @@ class SingleBlock(Tetromino):
 
 
 class Straight(Tetromino):
-    def __init__(self, _screen, _playing_area_bottom, _playing_area_left,
-                 _playing_area_right, _block_size, _all_sprites):
-        super(Straight, self).__init__(_screen, _playing_area_bottom, _playing_area_left,
-                                       _playing_area_right, _block_size, _all_sprites, Colors.TetroStraight)
+    def __init__(self, _window, _constants, _all_sprites):
+        super(Straight, self).__init__(_window, _constants, _all_sprites, colors.Tetrominos.Straight)
         self.shapes = [
             [
                 [0, 1, 0, 0],
@@ -174,25 +169,23 @@ class Straight(Tetromino):
                 [0, 0, 0, 0]
             ]
         ]
-        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.block_size,
-                                 len(self.shapes[self.current_shape]) * self.block_size))
+        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.constants.block_size,
+                                 len(self.shapes[self.current_shape]) * self.constants.block_size))
         self.rect = self.image.get_rect()
         self.draw()
 
 
 class Square(Tetromino):
-    def __init__(self, _screen, _playing_area_bottom, _playing_area_left,
-                 _playing_area_right, _block_size, _all_sprites):
-        super(Square, self).__init__(_screen, _playing_area_bottom, _playing_area_left,
-                                     _playing_area_right, _block_size, _all_sprites, Colors.TetroSquare)
+    def __init__(self, _window, _constants, _all_sprites):
+        super(Square, self).__init__(_window, _constants, _all_sprites, colors.Tetrominos.Square)
         self.shapes = [
             [
                 [1, 1],
                 [1, 1]
             ]
         ]
-        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.block_size,
-                                 len(self.shapes[self.current_shape]) * self.block_size))
+        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.constants.block_size,
+                                 len(self.shapes[self.current_shape]) * self.constants.block_size))
         self.rect = self.image.get_rect()
         self.draw()
 
@@ -204,10 +197,8 @@ class Square(Tetromino):
 
 
 class T(Tetromino):
-    def __init__(self, _screen, _playing_area_bottom, _playing_area_left,
-                 _playing_area_right, _block_size, _all_sprites):
-        super(T, self).__init__(_screen, _playing_area_bottom, _playing_area_left,
-                                _playing_area_right, _block_size, _all_sprites, Colors.TetroT)
+    def __init__(self, _window, _constants, _all_sprites):
+        super(T, self).__init__(_window, _constants, _all_sprites, colors.Tetrominos.T)
         self.shapes = [
             [
                 [1, 1, 1],
@@ -229,17 +220,15 @@ class T(Tetromino):
                 [1, 0, 0]
             ]
         ]
-        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.block_size,
-                                 len(self.shapes[self.current_shape]) * self.block_size))
+        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.constants.block_size,
+                                 len(self.shapes[self.current_shape]) * self.constants.block_size))
         self.rect = self.image.get_rect()
         self.draw()
 
 
 class L(Tetromino):
-    def __init__(self, _screen, _playing_area_bottom, _playing_area_left,
-                 _playing_area_right, _block_size, _all_sprites):
-        super(L, self).__init__(_screen, _playing_area_bottom, _playing_area_left,
-                                _playing_area_right, _block_size, _all_sprites, Colors.TetroL)
+    def __init__(self, _window, _constants, _all_sprites):
+        super(L, self).__init__(_window, _constants, _all_sprites, colors.Tetrominos.L)
         self.shapes = [
             [
                 [1, 0],
@@ -261,17 +250,15 @@ class L(Tetromino):
                 [1, 1, 1]
             ]
         ]
-        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.block_size,
-                                 len(self.shapes[self.current_shape]) * self.block_size))
+        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.constants.block_size,
+                                 len(self.shapes[self.current_shape]) * self.constants.block_size))
         self.rect = self.image.get_rect()
         self.draw()
 
 
 class J(Tetromino):
-    def __init__(self, _screen, _playing_area_bottom, _playing_area_left,
-                 _playing_area_right, _block_size, _all_sprites):
-        super(J, self).__init__(_screen, _playing_area_bottom, _playing_area_left,
-                                _playing_area_right, _block_size, _all_sprites, Colors.TetroJ)
+    def __init__(self, _window, _constants, _all_sprites):
+        super(J, self).__init__(_window, _constants, _all_sprites, colors.Tetrominos.J)
         self.shapes = [
             [
                 [0, 0, 1, 0],
@@ -294,17 +281,15 @@ class J(Tetromino):
                 [0, 0, 0]
             ]
         ]
-        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.block_size,
-                                 len(self.shapes[self.current_shape]) * self.block_size))
+        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.constants.block_size,
+                                 len(self.shapes[self.current_shape]) * self.constants.block_size))
         self.rect = self.image.get_rect()
         self.draw()
 
 
 class S(Tetromino):
-    def __init__(self, _screen, _playing_area_bottom, _playing_area_left,
-                 _playing_area_right, _block_size, _all_sprites):
-        super(S, self).__init__(_screen, _playing_area_bottom, _playing_area_left,
-                                _playing_area_right, _block_size, _all_sprites, Colors.TetroS)
+    def __init__(self, _window, _constants, _all_sprites):
+        super(S, self).__init__(_window, _constants, _all_sprites, colors.Tetrominos.S)
         self.shapes = [
             [
                 [0, 1, 1],
@@ -326,17 +311,15 @@ class S(Tetromino):
                 [0, 1, 0]
             ]
         ]
-        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.block_size,
-                                 len(self.shapes[self.current_shape]) * self.block_size))
+        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.constants.block_size,
+                                 len(self.shapes[self.current_shape]) * self.constants.block_size))
         self.rect = self.image.get_rect()
         self.draw()
 
 
 class Z(Tetromino):
-    def __init__(self, _screen, _playing_area_bottom, _playing_area_left,
-                 _playing_area_right, _block_size, _all_sprites):
-        super(Z, self).__init__(_screen, _playing_area_bottom, _playing_area_left,
-                                _playing_area_right, _block_size, _all_sprites, Colors.TetroZ)
+    def __init__(self, _window, _constants, _all_sprites):
+        super(Z, self).__init__(_window, _constants, _all_sprites, colors.Tetrominos.Z)
         self.shapes = [
             [
                 [1, 1, 0],
@@ -358,7 +341,7 @@ class Z(Tetromino):
                 [1, 0]
             ]
         ]
-        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.block_size,
-                                 len(self.shapes[self.current_shape]) * self.block_size))
+        self.image = pg.Surface((len(self.shapes[self.current_shape][0]) * self.constants.block_size,
+                                 len(self.shapes[self.current_shape]) * self.constants.block_size))
         self.rect = self.image.get_rect()
         self.draw()

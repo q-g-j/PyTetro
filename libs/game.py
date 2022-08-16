@@ -9,30 +9,24 @@ from libs.tetrominos import *
 
 
 class Game:
-    def __init__(self):
-        pg.init()
+    def __init__(self, _window, _constants, _all_sprites, _difficulty):
+        self.__window = _window
+        self.__constants = _constants
+        self.__difficulty = _difficulty
         self.__random = random.Random()
         self.__random.seed(uuid.uuid4().int)
         self.__clock = pg.time.Clock()
-        self.__fonts = Fonts()
-        self.__block_size, self.__screen_width, self.__screen_height = self.__compute_sizes()
-        self.__screen = pg.display.set_mode((self.__screen_width, self.__screen_height))
-        self.__playing_area_top = 0
-        self.__playing_area_left = self.__block_size
-        self.__playing_area_right = self.__screen_width - self.__block_size
-        self.__playing_area_bottom = self.__screen_height - self.__block_size
-        self.__all_sprites = pg.sprite.Group()
+        self.__fonts = Fonts(self.__constants)
+        self.__all_sprites = _all_sprites
         self.__all_sprites_list = list()
 
     def start(self):
-        self.__create_frame()
-        self.__main_loop()
+        return self.__game_loop()
 
-    def __main_loop(self):
+    def __game_loop(self):
         is_key_up_pressed = False
         current_tetromino = None
         self.__fps = 60
-        speed = 2
         pg.key.set_repeat(200, 50)
         game_over_tetromino_nums = [x for x in range(1, 8)]
 
@@ -106,13 +100,13 @@ class Game:
                     and counter_print_game_over != 0:
                 counter_print_game_over += 1
                 if counter_print_game_over == int(round(self.__fps / 2)) * 8:
-                    counter_print_game_over = 0
+                    return True
 
             if is_running \
                     and counter_move_down != 0:
                 if counter_has_lost == 0 \
                         and counter_print_game_over == 0 \
-                        and counter_move_down % int(self.__fps / speed) == 0:
+                        and counter_move_down % int(self.__fps / self.__difficulty / 2) == 0:
                     current_tetromino.move_down()
                     counter_move_down = 0
 
@@ -136,120 +130,80 @@ class Game:
 
             if is_running \
                     and counter_print_game_over == 0:
-                self.__screen.fill(Colors.SCREEN)
-                self.__all_sprites.draw(self.__screen)
+                self.__window.fill(colors.Constants.SCREEN)
+                self.__all_sprites.draw(self.__window)
                 pg.display.update()
 
             if is_running:
                 self.__clock.tick(self.__fps)
 
             if not is_running:
-                pg.quit()
-
-    def __create_frame(self):
-        for i in range(0, int(self.__playing_area_right / self.__block_size) + self.__block_size):
-            frame_block = FrameBlock(self.__screen, self.__block_size)
-            frame_block.rect.x = i * self.__block_size
-            frame_block.rect.y = -self.__block_size
-            self.__all_sprites.add(frame_block)
-        for i in range(0, int(self.__playing_area_right / self.__block_size) + self.__block_size):
-            frame_block = FrameBlock(self.__screen, self.__block_size)
-            frame_block.rect.x = i * self.__block_size
-            frame_block.rect.y = 21 * self.__block_size + self.__block_size
-            self.__all_sprites.add(frame_block)
-        for i in range(0, 22):
-            frame_block = FrameBlock(self.__screen, self.__block_size)
-            frame_block.rect.x = 0
-            frame_block.rect.y = i * self.__block_size
-            self.__all_sprites.add(frame_block)
-        for i in range(0, 22):
-            frame_block = FrameBlock(self.__screen, self.__block_size)
-            frame_block.rect.x = int(self.__playing_area_right / self.__block_size) * self.__block_size
-            frame_block.rect.y = i * self.__block_size
-            self.__all_sprites.add(frame_block)
+                return False
 
     def __create_tetromino(self, _number):
         current_tetromino = None
         if _number == 1:
-            current_tetromino = Straight(self.__screen, self.__playing_area_bottom,
-                                         self.__playing_area_left, self.__playing_area_right,
-                                         self.__block_size, self.__all_sprites)
+            current_tetromino = Straight(self.__window, self.__constants, self.__all_sprites)
         elif _number == 2:
-            current_tetromino = Square(self.__screen, self.__playing_area_bottom,
-                                       self.__playing_area_left, self.__playing_area_right,
-                                       self.__block_size, self.__all_sprites)
+            current_tetromino = Square(self.__window, self.__constants, self.__all_sprites)
         elif _number == 3:
-            current_tetromino = T(self.__screen, self.__playing_area_bottom,
-                                  self.__playing_area_left, self.__playing_area_right,
-                                  self.__block_size, self.__all_sprites)
+            current_tetromino = T(self.__window, self.__constants, self.__all_sprites)
         elif _number == 4:
-            current_tetromino = L(self.__screen, self.__playing_area_bottom,
-                                  self.__playing_area_left, self.__playing_area_right,
-                                  self.__block_size, self.__all_sprites)
+            current_tetromino = L(self.__window, self.__constants, self.__all_sprites)
         elif _number == 5:
-            current_tetromino = J(self.__screen, self.__playing_area_bottom,
-                                  self.__playing_area_left, self.__playing_area_right,
-                                  self.__block_size, self.__all_sprites)
+            current_tetromino = J(self.__window, self.__constants, self.__all_sprites)
         elif _number == 6:
-            current_tetromino = S(self.__screen, self.__playing_area_bottom,
-                                  self.__playing_area_left, self.__playing_area_right,
-                                  self.__block_size, self.__all_sprites)
+            current_tetromino = S(self.__window, self.__constants, self.__all_sprites)
         elif _number == 7:
-            current_tetromino = Z(self.__screen, self.__playing_area_bottom,
-                                  self.__playing_area_left, self.__playing_area_right,
-                                  self.__block_size, self.__all_sprites)
+            current_tetromino = Z(self.__window, self.__constants, self.__all_sprites)
 
         current_tetromino.rect.x = \
-            int(self.__screen_width / 2) - \
-            int((current_tetromino.image.get_width() / self.__block_size) / 2) * \
-            self.__block_size
-        current_tetromino.rect.y = self.__playing_area_top
+            int(self.__constants.window_width / 2) - \
+            int((current_tetromino.image.get_width() / self.__constants.block_size) / 2) * \
+            self.__constants.block_size
+        current_tetromino.rect.y = self.__constants.playing_area_top
         self.__all_sprites.add(current_tetromino)
 
         return current_tetromino
 
     def __change_tetromino_to_single_blocks(self, _tetromino: Tetromino, _all_sprites):
-        color = Colors.SCREEN
+        color = colors.Constants.SCREEN
         if type(_tetromino) == Straight:
-            color = Colors.TetroStraight
+            color = colors.Tetrominos.Straight
         elif type(_tetromino) == Square:
-            color = Colors.TetroSquare
+            color = colors.Tetrominos.Square
         elif type(_tetromino) == T:
-            color = Colors.TetroT
+            color = colors.Tetrominos.T
         elif type(_tetromino) == L:
-            color = Colors.TetroL
+            color = colors.Tetrominos.L
         elif type(_tetromino) == J:
-            color = Colors.TetroJ
+            color = colors.Tetrominos.J
         elif type(_tetromino) == S:
-            color = Colors.TetroS
+            color = colors.Tetrominos.S
         elif type(_tetromino) == Z:
-            color = Colors.TetroZ
+            color = colors.Tetrominos.Z
 
-        for x in range(_tetromino.rect.x, _tetromino.rect.x + _tetromino.image.get_width(), self.__block_size):
-            for y in range(_tetromino.rect.y, _tetromino.rect.y + _tetromino.image.get_height(), self.__block_size):
-                rect = pg.rect.Rect((x, y, self.__block_size, self.__block_size))
-                sprite = SingleBlock(self.__screen, self.__playing_area_bottom,
-                                     self.__playing_area_left, self.__playing_area_right,
-                                     self.__block_size, self.__all_sprites, color)
+        for x in range(_tetromino.rect.x, _tetromino.rect.x + _tetromino.image.get_width(), self.__constants.block_size):
+            for y in range(_tetromino.rect.y, _tetromino.rect.y + _tetromino.image.get_height(), self.__constants.block_size):
+                rect = pg.rect.Rect((x, y, self.__constants.block_size, self.__constants.block_size))
+                sprite = SingleBlock(self.__window, self.__constants, self.__all_sprites, color)
                 sprite.rect = rect
                 does_collide, colliding_sprite = sprite.does_collide(_all_sprites)
                 if does_collide and type(colliding_sprite) != FrameBlock and type(colliding_sprite) != SingleBlock:
                     _all_sprites.add(sprite)
         _tetromino.kill()
 
-        self.__screen.fill(Colors.SCREEN)
-        _all_sprites.draw(self.__screen)
+        self.__window.fill(colors.Constants.SCREEN)
+        _all_sprites.draw(self.__window)
 
     def __remove_full_rows(self, _all_sprites):
         has_removed = False
-        for row in range(1, int(self.__playing_area_bottom / self.__block_size) + 1):
+        for row in range(1, int(self.__constants.playing_area_bottom / self.__constants.block_size) + 1):
             row_blocks_rect_list = []
-            for col in range(1, int(self.__playing_area_right / self.__block_size)):
-                rect = pg.rect.Rect((col * self.__block_size, row * self.__block_size,
-                                     self.__block_size, self.__block_size))
-                sprite = SingleBlock(self.__screen, self.__playing_area_bottom,
-                                     self.__playing_area_left, self.__playing_area_right,
-                                     self.__block_size, self.__all_sprites, Colors.TetroSquare)
+            for col in range(1, int(self.__constants.playing_area_right / self.__constants.block_size)):
+                rect = pg.rect.Rect((col * self.__constants.block_size, row * self.__constants.block_size,
+                                     self.__constants.block_size, self.__constants.block_size))
+                sprite = SingleBlock(self.__window, self.__constants, self.__all_sprites, colors.Tetrominos.Square)
                 sprite.rect = rect
                 does_collide, colliding_sprite = Tetromino.does_collide(sprite, _all_sprites)
                 if does_collide:
@@ -259,10 +213,10 @@ class Game:
                 has_removed = True
                 for colliding_sprite in row_blocks_rect_list:
                     colliding_sprite.kill()
-                self.__drop_after_remove(_all_sprites, row * self.__block_size)
+                self.__drop_after_remove(_all_sprites, row * self.__constants.block_size)
 
-        self.__screen.fill(Colors.SCREEN)
-        _all_sprites.draw(self.__screen)
+        self.__window.fill(colors.Constants.SCREEN)
+        _all_sprites.draw(self.__window)
 
         return has_removed
 
@@ -273,23 +227,13 @@ class Game:
                 if tetromino.rect.y < _row:
                     tetromino.move_down_force()
 
-    @staticmethod
-    def __compute_sizes():
-        screen_height = int(round(pg.display.Info().current_h * (2 / 3)))
-        block_size = int(round(screen_height / 22))
-        if block_size % 2 == 0:
-            block_size += 1
-        screen_width = block_size * 12 + 2 * block_size
-        screen_height = block_size * 20 + 2 * block_size
-        return block_size, screen_width, screen_height
-
     def __print_game_over(self):
-        text_surface = self.__fonts.game_over.render("Game Over", True, Colors.RED)
+        text_surface = self.__fonts.game_over.render("Game Over", True, colors.Constants.RED)
         width = text_surface.get_width()
         height = text_surface.get_height()
-        x = int(round(self.__screen_width / 2)) - int(round(width / 2))
-        y = int(round(self.__screen_height / 3)) - int(round(height / 2))
-        self.__screen.fill(Colors.SCREEN)
-        self.__all_sprites.draw(self.__screen)
-        self.__screen.blit(text_surface, (x, y))
+        x = int(round(self.__constants.window_width / 2)) - int(round(width / 2))
+        y = int(round(self.__constants.window_height / 3)) - int(round(height / 2))
+        self.__window.fill(colors.Constants.SCREEN)
+        self.__all_sprites.draw(self.__window)
+        self.__window.blit(text_surface, (x, y))
         pg.display.update()
