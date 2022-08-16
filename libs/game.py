@@ -20,6 +20,8 @@ class Game:
         self.__all_sprites = _all_sprites
         self.__all_sprites_list = list()
 
+        self.__points = 0
+
     def start(self):
         return self.__game_loop()
 
@@ -198,6 +200,8 @@ class Game:
 
     def __remove_full_rows(self, _all_sprites):
         has_removed = False
+        count_removed_rows = 0
+
         for row in range(1, int(self.__constants.playing_area_bottom / self.__constants.block_size) + 1):
             row_blocks_rect_list = []
             for col in range(1, int(self.__constants.playing_area_right / self.__constants.block_size)):
@@ -210,6 +214,7 @@ class Game:
                     row_blocks_rect_list.append(colliding_sprite)
 
             if len(row_blocks_rect_list) == 12:
+                count_removed_rows += 1
                 has_removed = True
                 for colliding_sprite in row_blocks_rect_list:
                     colliding_sprite.kill()
@@ -217,6 +222,29 @@ class Game:
 
         self.__window.fill(colors.Constants.SCREEN)
         _all_sprites.draw(self.__window)
+
+        # if count_removed_rows == 1:
+        self.__points += int(((count_removed_rows ** 2) * 10) / 10) * 10
+
+        if 500 < self.__points < 1000:
+            self.__difficulty = 2
+        elif 1000 < self.__points < 1500:
+            self.__difficulty = 3
+        elif 1500 < self.__points < 2000:
+            self.__difficulty = 4
+        elif 2000 < self.__points < 2500:
+            self.__difficulty = 5
+        elif 2500 < self.__points < 3000:
+            self.__difficulty = 6
+        elif 3000 < self.__points < 3500:
+            self.__difficulty = 7
+        elif 3500 < self.__points < 4000:
+            self.__difficulty = 8
+        elif 4000 < self.__points < 4500:
+            self.__difficulty = 9
+        elif 4500 < self.__points < 5000:
+            self.__difficulty = 10
+
 
         return has_removed
 
