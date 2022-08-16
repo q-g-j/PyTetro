@@ -12,7 +12,7 @@ if __name__ == "__main__":
     pg.display.set_caption('PyTetro')
     all_sprites = pg.sprite.Group()
     constants = Constants()
-    window = pg.display.set_mode((constants.window_width, constants.window_height))
+    window = pg.display.set_mode((constants.window_width * 1.5, constants.window_height))
     frame = Frame(constants, all_sprites)
     frame.create_frame()
 
