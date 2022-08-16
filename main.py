@@ -9,6 +9,7 @@ import pygame as pg
 
 if __name__ == "__main__":
     pg.init()
+    pg.display.set_caption('PyTetro')
     all_sprites = pg.sprite.Group()
     constants = Constants()
     window = pg.display.set_mode((constants.window_width, constants.window_height))

@@ -54,12 +54,15 @@ class Game:
                         if pressed_keys[pg.K_LEFT] and not pressed_keys[pg.K_RIGHT]:
                             pg.key.set_repeat(200, 50)
                             current_tetromino.move_left()
+                            counter_at_bottom = 0
                         elif pressed_keys[pg.K_RIGHT] and not pressed_keys[pg.K_LEFT]:
                             pg.key.set_repeat(200, 50)
                             current_tetromino.move_right()
+                            counter_at_bottom = 0
                         elif pressed_keys[pg.K_UP] and not is_key_up_pressed:
                             is_key_up_pressed = True
                             current_tetromino.rotate_right()
+                            counter_at_bottom = 0
                         elif pressed_keys[pg.K_DOWN]:
                             pg.key.set_repeat(200, 30)
                             current_tetromino.move_down()
@@ -121,11 +124,12 @@ class Game:
                         if self.__remove_full_rows(self.__all_sprites):
                             counter_drop = 1
                         current_tetromino = None
-                    counter_at_bottom = 0
-                    counter_move_down = 0
+                        counter_move_down = 0
+                        counter_at_bottom = 0
 
             if is_running \
-                    and counter_drop != 0:
+                    and counter_drop != 0 \
+                    and counter_at_bottom != 0:
                 counter_drop += 1
                 if counter_drop == int(round(self.__fps / 3)):
                     counter_drop = 0
