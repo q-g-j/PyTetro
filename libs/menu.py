@@ -43,6 +43,8 @@ class MainMenu:
         self.__all_sprites = _all_sprites
         self.__clock = pg.time.Clock()
 
+        pg.key.set_repeat(200, 100)
+
         self.__menu_items = [
             MainMenuItem(self.__window, self.__constants, 0, "new game"),
             MainMenuItem(self.__window, self.__constants, 1, "difficulty"),
