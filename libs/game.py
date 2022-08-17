@@ -23,7 +23,7 @@ class Game:
         self.__all_sprites_list = list()
 
         self.__initial_level = _level
-        self.__points = 490
+        self.__points = 0
 
     def start(self):
         return self.__game_loop()
