@@ -145,7 +145,10 @@ class Game:
                 self.__all_sprites.draw(self.__window)
                 self.__sidebar.set_level(self.__difficulty)
                 self.__sidebar.set_points(self.__points)
-                self.__sidebar.set_next_tetromino(next_tetromino_num)
+                if counter_has_lost == 0:
+                    self.__sidebar.set_next_tetromino(next_tetromino_num)
+                else:
+                    self.__sidebar.set_next_tetromino(0)
                 self.__sidebar.draw()
                 pg.display.update()
 
