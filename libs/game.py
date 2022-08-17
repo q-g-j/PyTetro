@@ -56,21 +56,21 @@ class Game:
                         is_key_up_pressed = False
                     elif event.type == pg.KEYDOWN:
                         pressed_keys = pg.key.get_pressed()
-                        if pressed_keys[pg.K_LEFT] and not pressed_keys[pg.K_RIGHT]:
+                        if pressed_keys[pg.K_LEFT] or pressed_keys[pg.K_j]:
                             if not current_tetromino.would_collide_left(self.__all_sprites):
                                 pg.key.set_repeat(200, 50)
                                 current_tetromino.move_left()
                                 counter_at_bottom = 0
-                        elif pressed_keys[pg.K_RIGHT] and not pressed_keys[pg.K_LEFT]:
+                        elif pressed_keys[pg.K_RIGHT] or pressed_keys[pg.K_l]:
                             if not current_tetromino.would_collide_right(self.__all_sprites):
                                 pg.key.set_repeat(200, 50)
                                 current_tetromino.move_right()
                                 counter_at_bottom = 0
-                        elif pressed_keys[pg.K_UP] and not is_key_up_pressed:
+                        elif (pressed_keys[pg.K_UP] or pressed_keys[pg.K_i]) and not is_key_up_pressed:
                             is_key_up_pressed = True
                             current_tetromino.rotate_right()
                             counter_at_bottom = 0
-                        elif pressed_keys[pg.K_DOWN]:
+                        elif pressed_keys[pg.K_DOWN] or pressed_keys[pg.K_k]:
                             does_collide, tetromino = current_tetromino.does_collide(self.__all_sprites)
                             if not does_collide and not current_tetromino.would_collide_down(self.__all_sprites):
                                 pg.key.set_repeat(200, 30)

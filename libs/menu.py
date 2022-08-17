@@ -67,7 +67,7 @@ class MainMenu:
                     do_quit = True
                 elif event.type == pg.KEYDOWN:
                     pressed_keys = pg.key.get_pressed()
-                    if pressed_keys[pg.K_DOWN]:
+                    if pressed_keys[pg.K_DOWN] or pressed_keys[pg.K_k]:
                         if selected_menu_item < 2:
                             selected_menu_item += 1
                             self.__menu_items[selected_menu_item].is_selected = True
@@ -75,14 +75,14 @@ class MainMenu:
                             self.__menu_items[selected_menu_item - 1].is_selected = False
                             self.__menu_items[selected_menu_item - 1].color = colors.Menu.MenuItem.bg_unselected
 
-                    elif pressed_keys[pg.K_UP]:
+                    elif pressed_keys[pg.K_UP] or pressed_keys[pg.K_i]:
                         if selected_menu_item > 0:
                             selected_menu_item -= 1
                             self.__menu_items[selected_menu_item].is_selected = True
                             self.__menu_items[selected_menu_item].color = colors.Menu.MenuItem.bg_selected
                             self.__menu_items[selected_menu_item + 1].is_selected = False
                             self.__menu_items[selected_menu_item + 1].color = colors.Menu.MenuItem.bg_unselected
-                    elif pressed_keys[pg.K_RETURN]:
+                    elif pressed_keys[pg.K_RETURN] or pressed_keys[pg.K_SPACE]:
                         for index in range(len(self.__menu_items)):
                             if self.__menu_items[index].is_selected:
                                 if index == 0:
@@ -166,13 +166,13 @@ class DifficultyMenu:
                     do_quit = True
                 elif event.type == pg.KEYDOWN:
                     pressed_keys = pg.key.get_pressed()
-                    if pressed_keys[pg.K_DOWN]:
+                    if pressed_keys[pg.K_DOWN] or pressed_keys[pg.K_k]:
                         if self.__difficulty < 10:
                             self.__difficulty += 1
-                    elif pressed_keys[pg.K_UP]:
+                    elif pressed_keys[pg.K_UP] or pressed_keys[pg.K_i]:
                         if self.__difficulty > 1:
                             self.__difficulty -= 1
-                    elif pressed_keys[pg.K_RETURN]:
+                    elif pressed_keys[pg.K_RETURN] or pressed_keys[pg.K_SPACE]:
                         return self.__difficulty
 
             if is_running:
