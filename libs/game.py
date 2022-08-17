@@ -119,7 +119,7 @@ class Game:
                     and counter_move_down != 0:
                 if counter_has_lost == 0 \
                         and counter_print_game_over == 0 \
-                        and counter_move_down % int(round(self.__fps / self.__level / 1.5)) == 0:
+                        and counter_move_down % int(round(self.__fps / self.__level / 1.2)) == 0:
                     current_tetromino.move_down()
                     counter_move_down = 0
 
