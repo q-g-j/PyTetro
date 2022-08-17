@@ -23,7 +23,7 @@ class MainMenuItem:
         self.__border_radius = int(self.__height / 2)
         self.__left = int(round(_constants.window_width / 2 - self.__width / 2))
         self.__top = int(round(_constants.window_height / 5)) + \
-            (self.__height + int(round(self.__height / 2))) * _offset_y
+                     (self.__height + int(round(self.__height / 2))) * _offset_y
 
     def draw(self):
         pg.draw.rect(self.__window, self.color,
@@ -47,7 +47,7 @@ class MainMenu:
 
         self.__menu_items = [
             MainMenuItem(self.__window, self.__constants, 0, "new game"),
-            MainMenuItem(self.__window, self.__constants, 1, "difficulty"),
+            MainMenuItem(self.__window, self.__constants, 1, "level"),
             MainMenuItem(self.__window, self.__constants, 2, "quit")
             ]
 

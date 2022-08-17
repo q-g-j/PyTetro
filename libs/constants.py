@@ -6,10 +6,14 @@ import pygame as pg
 class Constants:
     def __init__(self):
         self.block_size, self.window_width, self.window_height = self.__compute_sizes()
+        self.sidebar_left = self.window_width
         self.playing_area_top = 0
         self.playing_area_left = self.block_size
         self.playing_area_right = self.window_width - self.block_size
         self.playing_area_bottom = self.window_height - self.block_size
+        self.sidebar_factor = 1.5
+        self.window_width_total = int(self.window_width * self.sidebar_factor)
+        self.sidebar_width = self.window_width_total - self.window_width
 
     @staticmethod
     def __compute_sizes():

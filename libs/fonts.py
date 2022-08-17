@@ -18,3 +18,11 @@ class Fonts:
         font_size_difficulty_number = int(round(constants.playing_area_right / 8))
         self.difficulty_number = pg.font.Font(
             Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf', font_size_difficulty_number)
+
+        font_size_sidebar_level = int(round(constants.playing_area_right / 8))
+        self.sidebar_level = pg.font.Font(
+            Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf', font_size_sidebar_level)
+
+        font_size_sidebar_points = int(round(constants.playing_area_right / 16))
+        self.sidebar_points = pg.font.Font(
+            Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf', font_size_sidebar_points)
