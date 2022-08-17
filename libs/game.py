@@ -57,20 +57,22 @@ class Game:
                     elif event.type == pg.KEYDOWN:
                         pressed_keys = pg.key.get_pressed()
                         if pressed_keys[pg.K_LEFT] and not pressed_keys[pg.K_RIGHT]:
-                            pg.key.set_repeat(200, 50)
-                            current_tetromino.move_left()
-                            counter_at_bottom = 0
+                            if not current_tetromino.would_collide_left(self.__all_sprites):
+                                pg.key.set_repeat(200, 50)
+                                current_tetromino.move_left()
+                                counter_at_bottom = 0
                         elif pressed_keys[pg.K_RIGHT] and not pressed_keys[pg.K_LEFT]:
-                            pg.key.set_repeat(200, 50)
-                            current_tetromino.move_right()
-                            counter_at_bottom = 0
+                            if not current_tetromino.would_collide_right(self.__all_sprites):
+                                pg.key.set_repeat(200, 50)
+                                current_tetromino.move_right()
+                                counter_at_bottom = 0
                         elif pressed_keys[pg.K_UP] and not is_key_up_pressed:
                             is_key_up_pressed = True
                             current_tetromino.rotate_right()
                             counter_at_bottom = 0
                         elif pressed_keys[pg.K_DOWN]:
                             does_collide, tetromino = current_tetromino.does_collide(self.__all_sprites)
-                            if not does_collide:
+                            if not does_collide and not current_tetromino.would_collide_down(self.__all_sprites):
                                 pg.key.set_repeat(200, 30)
                                 current_tetromino.move_down()
 
@@ -91,7 +93,7 @@ class Game:
                         does_collide, colliding_tetromino = current_tetromino.does_collide(self.__all_sprites)
                         if does_collide:
                             counter_has_lost = 1
-                elif current_tetromino.would_collide(self.__all_sprites) and counter_has_lost == 0:
+                elif current_tetromino.would_collide_down(self.__all_sprites) and counter_has_lost == 0:
                     counter_at_bottom = 1
 
                 counter_move_down += 1
@@ -127,7 +129,7 @@ class Game:
                     and counter_at_bottom != 0:
                 counter_at_bottom += 1
                 if counter_at_bottom == int(round(self.__fps / 3)):
-                    if current_tetromino.would_collide(self.__all_sprites):
+                    if current_tetromino.would_collide_down(self.__all_sprites):
                         self.__change_tetromino_to_single_blocks(current_tetromino, self.__all_sprites)
                         if self.__remove_full_rows(self.__all_sprites):
                             counter_drop = 1

@@ -109,13 +109,31 @@ class Tetromino(pg.sprite.Sprite):
                 return True, t
         return False, None
 
-    def would_collide(self, _sprite_group):
+    def would_collide_down(self, _sprite_group):
         self.rect.y += self.constants.block_size
         does_collide, colliding_sprite = self.does_collide(_sprite_group)
         if does_collide:
             self.rect.y -= self.constants.block_size
             return True
         self.rect.y -= self.constants.block_size
+        return False
+
+    def would_collide_left(self, _sprite_group):
+        self.rect.x -= self.constants.block_size
+        does_collide, colliding_sprite = self.does_collide(_sprite_group)
+        if does_collide:
+            self.rect.x += self.constants.block_size
+            return True
+        self.rect.x += self.constants.block_size
+        return False
+
+    def would_collide_right(self, _sprite_group):
+        self.rect.x += self.constants.block_size
+        does_collide, colliding_sprite = self.does_collide(_sprite_group)
+        if does_collide:
+            self.rect.x -= self.constants.block_size
+            return True
+        self.rect.x -= self.constants.block_size
         return False
 
 
