@@ -10,12 +10,14 @@ class Frame:
         self.__all_sprites = _all_sprites
 
     def create_frame(self):
-        for i in range(0, int(self.__constants.playing_area_right / self.__constants.block_size) + self.__constants.block_size):
+        for i in range(0, int(
+                self.__constants.playing_area_right / self.__constants.block_size) + self.__constants.block_size):
             frame_block = FrameBlock(self.__constants)
             frame_block.rect.x = i * self.__constants.block_size
             frame_block.rect.y = -self.__constants.block_size
             self.__all_sprites.add(frame_block)
-        for i in range(0, int(self.__constants.playing_area_right / self.__constants.block_size) + self.__constants.block_size):
+        for i in range(0, int(
+                self.__constants.playing_area_right / self.__constants.block_size) + self.__constants.block_size):
             frame_block = FrameBlock(self.__constants)
             frame_block.rect.x = i * self.__constants.block_size
             frame_block.rect.y = 21 * self.__constants.block_size + self.__constants.block_size
@@ -27,8 +29,8 @@ class Frame:
             self.__all_sprites.add(frame_block)
         for i in range(0, 22):
             frame_block = FrameBlock(self.__constants)
-            frame_block.rect.x = int(self.__constants.playing_area_right / self.__constants.block_size) \
-                * self.__constants.block_size
+            frame_block.rect.x = int(
+                self.__constants.playing_area_right / self.__constants.block_size) * self.__constants.block_size
             frame_block.rect.y = i * self.__constants.block_size
             self.__all_sprites.add(frame_block)
 
@@ -37,6 +39,7 @@ class FrameBlock(pg.sprite.Sprite):
     def __init__(self, _constants):
         super(FrameBlock, self).__init__()
         self.__constants = _constants
+
         self.mask = None
         self.draw()
 

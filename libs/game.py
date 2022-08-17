@@ -9,19 +9,21 @@ from libs.tetrominos import *
 
 
 class Game:
-    def __init__(self, _window, _constants, _all_sprites, _difficulty, _sidebar):
+    def __init__(self, _window, _constants, _all_sprites, _level, _sidebar):
         self.__window = _window
         self.__constants = _constants
-        self.__difficulty = _difficulty
+        self.__all_sprites = _all_sprites
+        self.__level = _level
         self.__sidebar = _sidebar
+
         self.__random = random.Random()
         self.__random.seed(uuid.uuid4().int)
         self.__clock = pg.time.Clock()
         self.__fonts = Fonts(self.__constants)
-        self.__all_sprites = _all_sprites
         self.__all_sprites_list = list()
 
-        self.__points = 0
+        self.__initial_level = _level
+        self.__points = 490
 
     def start(self):
         return self.__game_loop()
@@ -117,7 +119,7 @@ class Game:
                     and counter_move_down != 0:
                 if counter_has_lost == 0 \
                         and counter_print_game_over == 0 \
-                        and counter_move_down % int(self.__fps / self.__difficulty / 2) == 0:
+                        and counter_move_down % int(round(self.__fps / self.__level / 1.5)) == 0:
                     current_tetromino.move_down()
                     counter_move_down = 0
 
@@ -143,7 +145,7 @@ class Game:
                     and counter_print_game_over == 0:
                 self.__window.fill(colors.Constants.SCREEN)
                 self.__all_sprites.draw(self.__window)
-                self.__sidebar.set_level(self.__difficulty)
+                self.__sidebar.set_level(self.__level)
                 self.__sidebar.set_points(self.__points)
                 if counter_has_lost == 0:
                     self.__sidebar.set_next_tetromino(next_tetromino_num)
@@ -201,8 +203,10 @@ class Game:
         elif type(_tetromino) == Z:
             color = colors.Tetrominos.Z
 
-        for x in range(_tetromino.rect.x, _tetromino.rect.x + _tetromino.image.get_width(), self.__constants.block_size):
-            for y in range(_tetromino.rect.y, _tetromino.rect.y + _tetromino.image.get_height(), self.__constants.block_size):
+        for x in range(
+                _tetromino.rect.x, _tetromino.rect.x + _tetromino.image.get_width(), self.__constants.block_size):
+            for y in range(
+                    _tetromino.rect.y, _tetromino.rect.y + _tetromino.image.get_height(), self.__constants.block_size):
                 rect = pg.rect.Rect((x, y, self.__constants.block_size, self.__constants.block_size))
                 sprite = SingleBlock(self.__window, self.__constants, self.__all_sprites, color)
                 sprite.rect = rect
@@ -242,24 +246,26 @@ class Game:
         # if count_removed_rows == 1:
         self.__points += int(((count_removed_rows ** 2) * 10) / 10) * 10
 
-        if 500 < self.__points < 1000:
-            self.__difficulty = 2
-        elif 1000 < self.__points < 1500:
-            self.__difficulty = 3
-        elif 1500 < self.__points < 2000:
-            self.__difficulty = 4
-        elif 2000 < self.__points < 2500:
-            self.__difficulty = 5
-        elif 2500 < self.__points < 3000:
-            self.__difficulty = 6
-        elif 3000 < self.__points < 3500:
-            self.__difficulty = 7
-        elif 3500 < self.__points < 4000:
-            self.__difficulty = 8
-        elif 4000 < self.__points < 4500:
-            self.__difficulty = 9
-        elif 4500 < self.__points < 5000:
-            self.__difficulty = 10
+        actual_points = self.__points + self.__initial_level * 500 - 500
+
+        if 500 <= actual_points < 1000:
+            self.__level = 2
+        elif 1000 <= actual_points < 1500:
+            self.__level = 3
+        elif 1500 <= actual_points < 2000:
+            self.__level = 4
+        elif 2000 <= actual_points < 2500:
+            self.__level = 5
+        elif 2500 <= actual_points < 3000:
+            self.__level = 6
+        elif 3000 <= actual_points < 3500:
+            self.__level = 7
+        elif 3500 <= actual_points < 4000:
+            self.__level = 8
+        elif 4000 <= actual_points < 4500:
+            self.__level = 9
+        elif 4500 <= actual_points < 5000:
+            self.__level = 10
 
         return has_removed
 
@@ -279,7 +285,7 @@ class Game:
         self.__window.fill(colors.Constants.SCREEN)
         self.__all_sprites.draw(self.__window)
         self.__window.blit(text_surface, (x, y))
-        self.__sidebar.set_level(self.__difficulty)
+        self.__sidebar.set_level(self.__level)
         self.__sidebar.set_points(self.__points)
         self.__sidebar.set_next_tetromino(0)
         self.__sidebar.draw()

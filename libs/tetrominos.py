@@ -7,15 +7,14 @@ import libs.colors as colors
 class Tetromino(pg.sprite.Sprite):
     def __init__(self, _window, _constants, _all_sprites, _color):
         super(Tetromino, self).__init__()
-        self.constants = _constants
-        self.shapes = list()
-        self.shape_widths = list()
-        self.shape_heights = list()
-        self.current_shape = 0
         self.window = _window
-        self.color = _color
-        self.mask = None
+        self.constants = _constants
         self.all_sprites = _all_sprites
+        self.color = _color
+
+        self.shapes = list()
+        self.current_shape = 0
+        self.mask = None
 
     def draw(self):
         num_blocks_hori = len(self.shapes[self.current_shape][0])
