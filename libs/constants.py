@@ -18,7 +18,7 @@ class Constants:
         self.sidebar_width = self.window_width_total - self.window_width
 
     @staticmethod
-    def __compute_sizes():
+    def __compute_sizes() -> tuple[int, int, int]:
         window_height = int(round(pg.display.Info().current_h * (2 / 3)))
         block_size = int(round(window_height / 22))
         if block_size % 2 == 0:

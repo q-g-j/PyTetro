@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
-import pygame as pg
+from typing import Type
+
+from libs.constants import *
 import libs.colors as colors
 
 
 class Tetromino(pg.sprite.Sprite):
-    def __init__(self, _window, _constants, _all_sprites, _color):
+    def __init__(self, _window: pg.Surface, _constants: Constants, _all_sprites: pg.sprite.Group,
+                 _color: Type[colors.TetrominoBase]):
         super(Tetromino, self).__init__()
         self.window = _window
         self.constants = _constants
@@ -54,7 +57,7 @@ class Tetromino(pg.sprite.Sprite):
         self.image.set_colorkey(colors.Constants.BLACK)
         self.mask = pg.mask.from_surface(self.image)
 
-    def __rotate(self, _direction):
+    def __rotate(self, _direction: str):
         if _direction == 'left':
             self.current_shape = self.current_shape - 1 if self.current_shape > 0 else 3
         else:
@@ -101,12 +104,12 @@ class Tetromino(pg.sprite.Sprite):
     def move_down(self):
         self.rect.y += self.constants.block_size
 
-    def is_bottom(self):
+    def is_bottom(self) -> bool:
         if self.rect.y == self.constants.playing_area_bottom - self.image.get_height():
             return True
         return False
 
-    def does_collide(self, _sprite_group):
+    def does_collide(self, _sprite_group: pg.sprite.Group) -> tuple:
         for t in _sprite_group:
             if t == self:
                 continue
@@ -114,7 +117,7 @@ class Tetromino(pg.sprite.Sprite):
                 return True, t
         return False, None
 
-    def would_collide_down(self, _sprite_group):
+    def would_collide_down(self, _sprite_group: pg.sprite.Group) -> bool:
         self.rect.y += self.constants.block_size
         does_collide, colliding_sprite = self.does_collide(_sprite_group)
         if does_collide:
@@ -123,7 +126,7 @@ class Tetromino(pg.sprite.Sprite):
         self.rect.y -= self.constants.block_size
         return False
 
-    def would_collide_left(self, _sprite_group):
+    def would_collide_left(self, _sprite_group: pg.sprite.Group) -> bool:
         self.rect.x -= self.constants.block_size
         does_collide, colliding_sprite = self.does_collide(_sprite_group)
         if does_collide:
@@ -132,7 +135,7 @@ class Tetromino(pg.sprite.Sprite):
         self.rect.x += self.constants.block_size
         return False
 
-    def would_collide_right(self, _sprite_group):
+    def would_collide_right(self, _sprite_group: pg.sprite.Group) -> bool:
         self.rect.x += self.constants.block_size
         does_collide, colliding_sprite = self.does_collide(_sprite_group)
         if does_collide:
@@ -143,7 +146,7 @@ class Tetromino(pg.sprite.Sprite):
 
 
 class SingleBlock(Tetromino):
-    def __init__(self, _window, _constants, _all_sprites, _color):
+    def __init__(self, _window: pg.Surface, _constants: Constants, _all_sprites: pg.sprite.Group, _color):
         super(SingleBlock, self).__init__(_window, _constants, _all_sprites, _color)
         self.shapes = [
             [
@@ -163,8 +166,8 @@ class SingleBlock(Tetromino):
 
 
 class Straight(Tetromino):
-    def __init__(self, _window, _constants, _all_sprites):
-        super(Straight, self).__init__(_window, _constants, _all_sprites, colors.Tetrominoes.Straight)
+    def __init__(self, _window: pg.Surface, _constants: Constants, _all_sprites: pg.sprite.Group):
+        super(Straight, self).__init__(_window, _constants, _all_sprites, colors.TetrominoStraight)
         self.shapes = [
             [
                 [0, 1, 0, 0],
@@ -198,8 +201,8 @@ class Straight(Tetromino):
 
 
 class Square(Tetromino):
-    def __init__(self, _window, _constants, _all_sprites):
-        super(Square, self).__init__(_window, _constants, _all_sprites, colors.Tetrominoes.Square)
+    def __init__(self, _window: pg.Surface, _constants: Constants, _all_sprites: pg.sprite.Group):
+        super(Square, self).__init__(_window, _constants, _all_sprites, colors.TetrominoSquare)
         self.shapes = [
             [
                 [1, 1],
@@ -219,8 +222,8 @@ class Square(Tetromino):
 
 
 class T(Tetromino):
-    def __init__(self, _window, _constants, _all_sprites):
-        super(T, self).__init__(_window, _constants, _all_sprites, colors.Tetrominoes.T)
+    def __init__(self, _window: pg.Surface, _constants: Constants, _all_sprites: pg.sprite.Group):
+        super(T, self).__init__(_window, _constants, _all_sprites, colors.TetrominoT)
         self.shapes = [
             [
                 [1, 1, 1],
@@ -249,8 +252,8 @@ class T(Tetromino):
 
 
 class L(Tetromino):
-    def __init__(self, _window, _constants, _all_sprites):
-        super(L, self).__init__(_window, _constants, _all_sprites, colors.Tetrominoes.L)
+    def __init__(self, _window: pg.Surface, _constants: Constants, _all_sprites: pg.sprite.Group):
+        super(L, self).__init__(_window, _constants, _all_sprites, colors.TetrominoL)
         self.shapes = [
             [
                 [1, 0],
@@ -279,8 +282,8 @@ class L(Tetromino):
 
 
 class J(Tetromino):
-    def __init__(self, _window, _constants, _all_sprites):
-        super(J, self).__init__(_window, _constants, _all_sprites, colors.Tetrominoes.J)
+    def __init__(self, _window: pg.Surface, _constants: Constants, _all_sprites: pg.sprite.Group):
+        super(J, self).__init__(_window, _constants, _all_sprites, colors.TetrominoJ)
         self.shapes = [
             [
                 [0, 0, 1, 0],
@@ -310,8 +313,8 @@ class J(Tetromino):
 
 
 class S(Tetromino):
-    def __init__(self, _window, _constants, _all_sprites):
-        super(S, self).__init__(_window, _constants, _all_sprites, colors.Tetrominoes.S)
+    def __init__(self, _window: pg.Surface, _constants: Constants, _all_sprites: pg.sprite.Group):
+        super(S, self).__init__(_window, _constants, _all_sprites, colors.TetrominoS)
         self.shapes = [
             [
                 [0, 1, 1],
@@ -340,8 +343,8 @@ class S(Tetromino):
 
 
 class Z(Tetromino):
-    def __init__(self, _window, _constants, _all_sprites):
-        super(Z, self).__init__(_window, _constants, _all_sprites, colors.Tetrominoes.Z)
+    def __init__(self, _window: pg.Surface, _constants: Constants, _all_sprites: pg.sprite.Group):
+        super(Z, self).__init__(_window, _constants, _all_sprites, colors.TetrominoZ)
         self.shapes = [
             [
                 [1, 1, 0],

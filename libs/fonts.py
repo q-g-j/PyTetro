@@ -7,34 +7,34 @@ from libs.common import *
 
 class Fonts:
     def __init__(self, constants):
-        font_size_menu_item = int(round(constants.playing_area_right / 14))
+        font_size = int(round(constants.playing_area_right / 14))
         self.main_menu_item = pg.font.Font(
-            Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf', font_size_menu_item)
+            Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf', font_size)
 
-        font_size_game_over = int(round(constants.playing_area_right / 8))
+        font_size = int(round(constants.playing_area_right / 8))
         self.game_over = pg.font.Font(
-            Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf', font_size_game_over)
+            Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf', font_size)
 
-        font_size_difficulty_number = int(round(constants.playing_area_right / 8))
-        self.difficulty_number = pg.font.Font(
+        font_size = int(round(constants.playing_area_right / 8))
+        self.level_number = pg.font.Font(
             Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf',
-            font_size_difficulty_number)
+            font_size)
 
-        font_size_sidebar_level = int(round(constants.playing_area_right / 8))
+        font_size = int(round(constants.playing_area_right / 8))
         self.sidebar_level = pg.font.Font(
-            Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf', font_size_sidebar_level)
+            Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf', font_size)
 
-        font_size_sidebar_points = int(round(constants.playing_area_right / 16))
+        font_size = int(round(constants.playing_area_right / 16))
         self.sidebar_points = pg.font.Font(
             Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf',
-            font_size_sidebar_points)
+            font_size)
 
-        font_size_game_paused_title = int(round(constants.playing_area_right / 8))
+        font_size = int(round(constants.playing_area_right / 8))
         self.game_paused_title = pg.font.Font(
             Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf',
-            font_size_game_paused_title)
+            font_size)
 
-        font_size_game_paused_press_key = int(round(constants.playing_area_right / 12))
+        font_size = int(round(constants.playing_area_right / 12))
         self.game_paused_press_key = pg.font.Font(
             Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf',
-            font_size_game_paused_press_key)
+            font_size)

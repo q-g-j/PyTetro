@@ -17,7 +17,7 @@ if __name__ == "__main__":
     frame = Frame(constants, all_sprites)
     frame.create_frame()
 
-    selected_difficulty = 1
+    selected_level = 1
 
     do_run = True
     while do_run:
@@ -29,16 +29,16 @@ if __name__ == "__main__":
             do_run = False
             pg.quit()
         elif menu_choice == 1:
-            difficulty_menu = DifficultyMenu(window, constants, all_sprites, selected_difficulty)
-            selected_difficulty = difficulty_menu.show_difficulty_menu()
-            if selected_difficulty == -1:
+            level_menu = LevelMenu(window, constants, all_sprites, selected_level)
+            selected_level = level_menu.show_level_menu()
+            if selected_level == -1:
                 do_run = False
                 pg.quit()
         else:
             window = pg.display.set_mode((constants.window_width * 1.5, constants.window_height))
 
             sidebar = SideBar(window, constants)
-            game = Game(window, constants, all_sprites, selected_difficulty, sidebar)
+            game = Game(window, sidebar, constants, all_sprites, selected_level)
 
             if not game.start():
                 do_run = False

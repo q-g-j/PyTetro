@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import pygame as pg
+from libs.constants import *
 import libs.colors as colors
 
 
 class Frame:
-    def __init__(self, _constants, _all_sprites):
+    def __init__(self, _constants: Constants, _all_sprites: pg.sprite.Group):
         self.__constants = _constants
         self.__all_sprites = _all_sprites
 
@@ -36,7 +36,7 @@ class Frame:
 
 
 class FrameBlock(pg.sprite.Sprite):
-    def __init__(self, _constants):
+    def __init__(self, _constants: Constants):
         super(FrameBlock, self).__init__()
         self.__constants = _constants
 
@@ -47,16 +47,16 @@ class FrameBlock(pg.sprite.Sprite):
         self.image = pg.Surface((self.__constants.block_size, self.__constants.block_size))
         self.rect = self.image.get_rect()
 
-        pg.draw.polygon(surface=self.image, color=colors.Frame.FrameBlock.bg_topleft,
+        pg.draw.polygon(surface=self.image, color=colors.FrameBlock.bg_topleft,
                         points=[(0, self.__constants.block_size - 1),
                                 (0, 0),
                                 (self.__constants.block_size - 1, 0)])
-        pg.draw.polygon(surface=self.image, color=colors.Frame.FrameBlock.bg_bottomright,
+        pg.draw.polygon(surface=self.image, color=colors.FrameBlock.bg_bottomright,
                         points=[(0, self.__constants.block_size - 1),
                                 (self.__constants.block_size - 1, 0),
                                 (self.__constants.block_size - 1, self.__constants.block_size - 1)])
         pg.draw.rect(self.image,
-                     color=colors.Frame.FrameBlock.fg_square,
+                     color=colors.FrameBlock.fg_square,
                      rect=(int(round(self.__constants.block_size / 8)),
                            int(round(self.__constants.block_size / 8)),
                            int(round(self.__constants.block_size / (4 / 3))),

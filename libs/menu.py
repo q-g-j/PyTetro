@@ -7,8 +7,8 @@ from libs.constants import *
 
 
 class MainMenuItem:
-    def __init__(self, _window, _constants: Constants, _offset_y, _text):
-        self.color = colors.Menu.MenuItem.bg_unselected
+    def __init__(self, _window: pg.Surface, _constants: Constants, _offset_y: int, _text: str):
+        self.color = colors.MenuItem.bg_unselected
         self.__window = _window
         self.__constants = _constants
         self.__offset_y = _offset_y
@@ -28,7 +28,7 @@ class MainMenuItem:
     def draw(self):
         pg.draw.rect(self.__window, self.color,
                      (self.__left, self.__top, self.__width, self.__height), border_radius=self.__border_radius)
-        text_surface = self.__fonts.main_menu_item.render(self.__text, True, colors.Menu.MenuItem.text)
+        text_surface = self.__fonts.main_menu_item.render(self.__text, True, colors.MenuItem.text)
         width = text_surface.get_width()
         height = text_surface.get_height()
         x = self.__left + int(round(self.__width / 2) - int(round(width / 2)))
@@ -37,7 +37,7 @@ class MainMenuItem:
 
 
 class MainMenu:
-    def __init__(self, _window: pg.Surface, _constants: Constants, _all_sprites):
+    def __init__(self, _window: pg.Surface, _constants: Constants, _all_sprites: pg.sprite.Group):
         self.__window = _window
         self.__constants = _constants
         self.__all_sprites = _all_sprites
@@ -57,7 +57,7 @@ class MainMenu:
     def __main_menu_loop(self):
         selected_menu_item = 0
         self.__menu_items[0].is_selected = True
-        self.__menu_items[0].color = colors.Menu.MenuItem.bg_selected
+        self.__menu_items[0].color = colors.MenuItem.bg_selected
         do_quit = False
         is_running = True
         while is_running:
@@ -71,17 +71,17 @@ class MainMenu:
                         if selected_menu_item < 2:
                             selected_menu_item += 1
                             self.__menu_items[selected_menu_item].is_selected = True
-                            self.__menu_items[selected_menu_item].color = colors.Menu.MenuItem.bg_selected
+                            self.__menu_items[selected_menu_item].color = colors.MenuItem.bg_selected
                             self.__menu_items[selected_menu_item - 1].is_selected = False
-                            self.__menu_items[selected_menu_item - 1].color = colors.Menu.MenuItem.bg_unselected
+                            self.__menu_items[selected_menu_item - 1].color = colors.MenuItem.bg_unselected
 
                     elif pressed_keys[pg.K_UP] or pressed_keys[pg.K_i]:
                         if selected_menu_item > 0:
                             selected_menu_item -= 1
                             self.__menu_items[selected_menu_item].is_selected = True
-                            self.__menu_items[selected_menu_item].color = colors.Menu.MenuItem.bg_selected
+                            self.__menu_items[selected_menu_item].color = colors.MenuItem.bg_selected
                             self.__menu_items[selected_menu_item + 1].is_selected = False
-                            self.__menu_items[selected_menu_item + 1].color = colors.Menu.MenuItem.bg_unselected
+                            self.__menu_items[selected_menu_item + 1].color = colors.MenuItem.bg_unselected
                     elif pressed_keys[pg.K_RETURN]:
                         for index in range(len(self.__menu_items)):
                             if self.__menu_items[index].is_selected:
@@ -107,8 +107,8 @@ class MainMenu:
                 return -1
 
 
-class DifficultySelector:
-    def __init__(self, _window, _constants: Constants):
+class LevelSelectorFrame:
+    def __init__(self, _window: pg.Surface, _constants: Constants):
         self.__window = _window
         self.__constants = _constants
 
@@ -120,8 +120,8 @@ class DifficultySelector:
         pg.draw.rect(self.__window, (255, 200, 0), (x, y, width, height), 6, border_radius=int(height / 3))
 
 
-class DifficultyNumber:
-    def __init__(self, _window, _constants: Constants, _number):
+class LevelNumber:
+    def __init__(self, _window: pg.Surface, _constants: Constants, _number: int):
         self.__window = _window
         self.__constants = _constants
         self.__number = _number
@@ -130,7 +130,7 @@ class DifficultyNumber:
         self.position = 0
 
     def draw(self):
-        text_surface = self.__fonts.difficulty_number.render(self.__number, True, colors.Menu.MenuItem.text)
+        text_surface = self.__fonts.level_number.render(str(self.__number), True, colors.MenuItem.text)
         width = text_surface.get_width()
         height = text_surface.get_height()
         offset_y = self.position * height
@@ -139,24 +139,25 @@ class DifficultyNumber:
         self.__window.blit(text_surface, (x, y))
 
 
-class DifficultyMenu:
-    def __init__(self, _window: pg.Surface, _constants: Constants, _all_sprites, _last_difficulty):
+class LevelMenu:
+    def __init__(self, _window: pg.Surface, _constants: Constants, _all_sprites: pg.sprite.Group,
+                 _last_selected_level: int):
         self.__window = _window
         self.__constants = _constants
         self.__all_sprites = _all_sprites
-        self.__difficulty = _last_difficulty
+        self.__level = _last_selected_level
         self.__clock = pg.time.Clock()
 
-        self.__difficulty_selector = DifficultySelector(self.__window, self.__constants)
-        self.__difficulty_numbers = list()
+        self.__level_selector_frame = LevelSelectorFrame(self.__window, self.__constants)
+        self.__level_numbers = list()
         for i in range(1, self.__constants.max_level + 1):
-            number = DifficultyNumber(self.__window, self.__constants, str(i))
-            self.__difficulty_numbers.append(number)
+            number = LevelNumber(self.__window, self.__constants, i)
+            self.__level_numbers.append(number)
 
-    def show_difficulty_menu(self):
-        return self.__difficulty_menu_loop()
+    def show_level_menu(self) -> int:
+        return self.__level_menu_loop()
 
-    def __difficulty_menu_loop(self):
+    def __level_menu_loop(self) -> int:
         do_quit = False
         is_running = True
         while is_running:
@@ -167,39 +168,39 @@ class DifficultyMenu:
                 elif event.type == pg.KEYDOWN:
                     pressed_keys = pg.key.get_pressed()
                     if pressed_keys[pg.K_DOWN] or pressed_keys[pg.K_k]:
-                        if self.__difficulty < self.__constants.max_level:
-                            self.__difficulty += 1
+                        if self.__level < self.__constants.max_level:
+                            self.__level += 1
                     elif pressed_keys[pg.K_UP] or pressed_keys[pg.K_i]:
-                        if self.__difficulty > 1:
-                            self.__difficulty -= 1
+                        if self.__level > 1:
+                            self.__level -= 1
                     elif pressed_keys[pg.K_RETURN]:
-                        return self.__difficulty
+                        return self.__level
 
             if is_running:
                 self.__window.fill(colors.Constants.SCREEN)
-                self.__difficulty_selector.draw()
+                self.__level_selector_frame.draw()
 
-                if self.__difficulty == 1:
-                    self.__difficulty_numbers[self.__difficulty - 1].position = 0
-                    self.__difficulty_numbers[self.__difficulty - 1].draw()
+                if self.__level == 1:
+                    self.__level_numbers[self.__level - 1].position = 0
+                    self.__level_numbers[self.__level - 1].draw()
 
-                    self.__difficulty_numbers[self.__difficulty].position = 1
-                    self.__difficulty_numbers[self.__difficulty].draw()
-                elif 1 < self.__difficulty < self.__constants.max_level:
-                    self.__difficulty_numbers[self.__difficulty - 2].position = -1
-                    self.__difficulty_numbers[self.__difficulty - 2].draw()
+                    self.__level_numbers[self.__level].position = 1
+                    self.__level_numbers[self.__level].draw()
+                elif 1 < self.__level < self.__constants.max_level:
+                    self.__level_numbers[self.__level - 2].position = -1
+                    self.__level_numbers[self.__level - 2].draw()
 
-                    self.__difficulty_numbers[self.__difficulty - 1].position = 0
-                    self.__difficulty_numbers[self.__difficulty - 1].draw()
+                    self.__level_numbers[self.__level - 1].position = 0
+                    self.__level_numbers[self.__level - 1].draw()
 
-                    self.__difficulty_numbers[self.__difficulty].position = 1
-                    self.__difficulty_numbers[self.__difficulty].draw()
-                elif self.__difficulty == self.__constants.max_level:
-                    self.__difficulty_numbers[self.__difficulty - 2].position = -1
-                    self.__difficulty_numbers[self.__difficulty - 2].draw()
+                    self.__level_numbers[self.__level].position = 1
+                    self.__level_numbers[self.__level].draw()
+                elif self.__level == self.__constants.max_level:
+                    self.__level_numbers[self.__level - 2].position = -1
+                    self.__level_numbers[self.__level - 2].draw()
 
-                    self.__difficulty_numbers[self.__difficulty - 1].position = 0
-                    self.__difficulty_numbers[self.__difficulty - 1].draw()
+                    self.__level_numbers[self.__level - 1].position = 0
+                    self.__level_numbers[self.__level - 1].draw()
 
                 self.__all_sprites.draw(self.__window)
                 pg.display.update()

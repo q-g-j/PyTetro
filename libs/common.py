@@ -6,7 +6,7 @@ import sys
 
 class Common:
     @staticmethod
-    def get_script_path():
+    def get_script_path() -> str:
         if hasattr(sys, '_MEIPASS'):
             return getattr(sys, '_MEIPASS') + "/"
         else:
