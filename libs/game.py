@@ -84,6 +84,8 @@ class Game:
                                     and current_tetromino is not None:
                                 is_rotate_key_pressed = True
                                 current_tetromino.rotate_left()
+                                if not current_tetromino.would_collide_down(self.__all_sprites):
+                                    counter_at_bottom = 0
                         elif (pressed_keys[pg.K_UP] or pressed_keys[pg.K_i]) and not pressed_keys[pg.K_SPACE]:
                             if not is_rotate_key_pressed \
                                     and counter_has_lost == 0 \
@@ -92,6 +94,8 @@ class Game:
                                     and current_tetromino is not None:
                                 is_rotate_key_pressed = True
                                 current_tetromino.rotate_right()
+                                if not current_tetromino.would_collide_down(self.__all_sprites):
+                                    counter_at_bottom = 0
                         if pressed_keys[pg.K_SPACE]:
                             if not is_rotate_key_pressed \
                                     and counter_has_lost == 0 \
