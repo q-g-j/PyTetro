@@ -89,12 +89,6 @@ class Tetromino(pg.sprite.Sprite):
 
     def move_down(self):
         self.rect.y += self.constants.block_size
-        does_collide, colliding_sprite = self.does_collide(self.all_sprites)
-        if does_collide:
-            self.rect.y -= self.constants.block_size
-
-    def move_down_force(self):
-        self.rect.y += self.constants.block_size
 
     def is_bottom(self):
         if self.rect.y == self.constants.playing_area_bottom - self.image.get_height():

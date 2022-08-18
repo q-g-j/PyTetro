@@ -149,7 +149,7 @@ class DifficultyMenu:
 
         self.__difficulty_selector = DifficultySelector(self.__window, self.__constants)
         self.__difficulty_numbers = list()
-        for i in range(1, 11):
+        for i in range(1, 16):
             number = DifficultyNumber(self.__window, self.__constants, str(i))
             self.__difficulty_numbers.append(number)
 
@@ -167,7 +167,7 @@ class DifficultyMenu:
                 elif event.type == pg.KEYDOWN:
                     pressed_keys = pg.key.get_pressed()
                     if pressed_keys[pg.K_DOWN] or pressed_keys[pg.K_k]:
-                        if self.__difficulty < 10:
+                        if self.__difficulty < 15:
                             self.__difficulty += 1
                     elif pressed_keys[pg.K_UP] or pressed_keys[pg.K_i]:
                         if self.__difficulty > 1:
@@ -185,7 +185,7 @@ class DifficultyMenu:
 
                     self.__difficulty_numbers[self.__difficulty].position = 1
                     self.__difficulty_numbers[self.__difficulty].draw()
-                elif 1 < self.__difficulty < 10:
+                elif 1 < self.__difficulty < 15:
                     self.__difficulty_numbers[self.__difficulty - 2].position = -1
                     self.__difficulty_numbers[self.__difficulty - 2].draw()
 
@@ -194,7 +194,7 @@ class DifficultyMenu:
 
                     self.__difficulty_numbers[self.__difficulty].position = 1
                     self.__difficulty_numbers[self.__difficulty].draw()
-                elif self.__difficulty == 10:
+                elif self.__difficulty == 15:
                     self.__difficulty_numbers[self.__difficulty - 2].position = -1
                     self.__difficulty_numbers[self.__difficulty - 2].draw()
 
@@ -205,7 +205,7 @@ class DifficultyMenu:
                 pg.display.update()
 
             if is_running:
-                self.__clock.tick(60)
+                self.__clock.tick(self.__constants.fps)
 
             if do_quit:
                 return -1

@@ -18,7 +18,7 @@ class SideBar:
 
     def draw(self):
         text_level_surface = self.__fonts.sidebar_level.render(
-            "Level: " + str(self.__level), True, colors.Constants.RED)
+            "level: " + str(self.__level), True, colors.Constants.RED)
         text_level_surface_width = text_level_surface.get_width()
         text_level_surface_height = text_level_surface.get_height()
         text_level_surface_x = int(round(self.__constants.window_width + self.__constants.sidebar_width / 2)) \
@@ -28,7 +28,7 @@ class SideBar:
         self.__window.blit(text_level_surface, (text_level_surface_x, text_level_surface_y))
 
         text_points_surface = self.__fonts.sidebar_points.render(
-            "Points: " + str(self.__points), True, colors.Constants.RED)
+            "points: " + str(self.__points), True, colors.Constants.RED)
         text_points_surface_width = text_points_surface.get_width()
         text_points_surface_height = text_points_surface.get_height()
         text_points_surface_x = int(round(self.__constants.window_width + self.__constants.sidebar_width / 2)) \

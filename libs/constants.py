@@ -5,6 +5,7 @@ import pygame as pg
 
 class Constants:
     def __init__(self):
+        self.fps = 60
         self.block_size, self.window_width, self.window_height = self.__compute_sizes()
         self.sidebar_left = self.window_width
         self.playing_area_top = 0
