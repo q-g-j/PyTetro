@@ -12,13 +12,15 @@ Latest release:
 Controls:
 ---------
 
-|Key|Menu Navigation|
+### Menu navigation:
+|Key|Action|
 |-|-|
 |up arrow or "I"|navigate up|
 |down arrow or "K"|navigate down|
 |enter or space|apply selection|
 
-|Key|Ingame Control|
+### Ingame control:
+|Key|Action|
 |-|-|
 |left arrow or "J"|move tetromino left|
 |right arrow or "L"|move tetromino right|
