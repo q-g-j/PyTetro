@@ -149,7 +149,7 @@ class DifficultyMenu:
 
         self.__difficulty_selector = DifficultySelector(self.__window, self.__constants)
         self.__difficulty_numbers = list()
-        for i in range(1, self.__constants.max_level - 1):
+        for i in range(1, self.__constants.max_level + 1):
             number = DifficultyNumber(self.__window, self.__constants, str(i))
             self.__difficulty_numbers.append(number)
 

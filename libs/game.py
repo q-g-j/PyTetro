@@ -56,6 +56,7 @@ class Game:
                             is_game_paused = not is_game_paused
                         elif pressed_keys[pg.K_LEFT] or pressed_keys[pg.K_j]:
                             if counter_has_lost == 0 \
+                                    and not is_game_paused \
                                     and counter_print_game_over == 0 \
                                     and current_tetromino is not None:
                                 if not current_tetromino.would_collide_left(self.__all_sprites):
@@ -64,6 +65,7 @@ class Game:
                                     counter_at_bottom = 0
                         elif pressed_keys[pg.K_RIGHT] or pressed_keys[pg.K_l]:
                             if counter_has_lost == 0 \
+                                    and not is_game_paused \
                                     and counter_print_game_over == 0 \
                                     and current_tetromino is not None:
                                 if not current_tetromino.would_collide_right(self.__all_sprites):
@@ -72,6 +74,7 @@ class Game:
                                     counter_at_bottom = 0
                         elif (pressed_keys[pg.K_UP] or pressed_keys[pg.K_i]) and not is_key_up_pressed:
                             if counter_has_lost == 0 \
+                                    and not is_game_paused \
                                     and counter_print_game_over == 0 \
                                     and current_tetromino is not None:
                                 is_key_up_pressed = True
@@ -79,6 +82,7 @@ class Game:
                                 counter_at_bottom = 0
                         elif pressed_keys[pg.K_DOWN] or pressed_keys[pg.K_k]:
                             if counter_has_lost == 0 \
+                                    and not is_game_paused \
                                     and counter_print_game_over == 0 \
                                     and current_tetromino is not None:
                                 if not current_tetromino.would_collide_down(self.__all_sprites):
