@@ -24,6 +24,7 @@ Controls:
 |-|-|
 |LEFT or "J"|move tetromino left|
 |RIGHT or "L"|move tetromino right|
-|DOWN or "K"|move tetromino down|
+|SPACE|move tetromino down|
+|DOWN or "K"|rotate tetromino counterclockwise|
 |UP or "I"|rotate tetromino clockwise|
-|SPACE or PAUSE or "P"|pause the game|
+|PAUSE or "P"|pause / resume the game|

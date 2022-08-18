@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-import datetime
+
 import uuid
 import random
 
 from libs.fonts import *
 from libs.frame import *
-from libs.tetrominos import *
+from libs.tetrominoes import *
 
 
 class Game:
@@ -29,7 +29,7 @@ class Game:
         return self.__game_loop()
 
     def __game_loop(self):
-        is_key_up_pressed = False
+        is_rotate_key_pressed = False
         current_tetromino = None
         pg.key.set_repeat(200, 50)
         game_over_tetromino_nums = [x for x in range(1, 8)]
@@ -49,10 +49,10 @@ class Game:
                     is_running = False
                 if is_running:
                     if event.type == pg.KEYUP:
-                        is_key_up_pressed = False
+                        is_rotate_key_pressed = False
                     elif event.type == pg.KEYDOWN:
                         pressed_keys = pg.key.get_pressed()
-                        if pressed_keys[pg.K_PAUSE] or pressed_keys[pg.K_p] or pressed_keys[pg.K_SPACE]:
+                        if pressed_keys[pg.K_PAUSE] or pressed_keys[pg.K_p]:
                             is_game_paused = not is_game_paused
                         elif pressed_keys[pg.K_LEFT] or pressed_keys[pg.K_j]:
                             if counter_has_lost == 0 \
@@ -62,7 +62,6 @@ class Game:
                                 if not current_tetromino.would_collide_left(self.__all_sprites):
                                     pg.key.set_repeat(200, 50)
                                     current_tetromino.move_left()
-                                    counter_at_bottom = 0
                         elif pressed_keys[pg.K_RIGHT] or pressed_keys[pg.K_l]:
                             if counter_has_lost == 0 \
                                     and not is_game_paused \
@@ -71,16 +70,23 @@ class Game:
                                 if not current_tetromino.would_collide_right(self.__all_sprites):
                                     pg.key.set_repeat(200, 50)
                                     current_tetromino.move_right()
-                                    counter_at_bottom = 0
-                        elif (pressed_keys[pg.K_UP] or pressed_keys[pg.K_i]) and not is_key_up_pressed:
-                            if counter_has_lost == 0 \
+                        if (pressed_keys[pg.K_DOWN] or pressed_keys[pg.K_k]) and not pressed_keys[pg.K_SPACE]:
+                            if not is_rotate_key_pressed \
+                                    and counter_has_lost == 0 \
                                     and not is_game_paused \
                                     and counter_print_game_over == 0 \
                                     and current_tetromino is not None:
-                                is_key_up_pressed = True
+                                is_rotate_key_pressed = True
+                                current_tetromino.rotate_left()
+                        elif (pressed_keys[pg.K_UP] or pressed_keys[pg.K_i]) and not pressed_keys[pg.K_SPACE]:
+                            if not is_rotate_key_pressed \
+                                    and counter_has_lost == 0 \
+                                    and not is_game_paused \
+                                    and counter_print_game_over == 0 \
+                                    and current_tetromino is not None:
+                                is_rotate_key_pressed = True
                                 current_tetromino.rotate_right()
-                                counter_at_bottom = 0
-                        elif pressed_keys[pg.K_DOWN] or pressed_keys[pg.K_k]:
+                        if pressed_keys[pg.K_SPACE]:
                             if counter_has_lost == 0 \
                                     and not is_game_paused \
                                     and counter_print_game_over == 0 \
@@ -216,19 +222,19 @@ class Game:
     def __change_tetromino_to_single_blocks(self, _tetromino: Tetromino, _all_sprites):
         color = colors.Constants.SCREEN
         if type(_tetromino) == Straight:
-            color = colors.Tetrominos.Straight
+            color = colors.Tetrominoes.Straight
         elif type(_tetromino) == Square:
-            color = colors.Tetrominos.Square
+            color = colors.Tetrominoes.Square
         elif type(_tetromino) == T:
-            color = colors.Tetrominos.T
+            color = colors.Tetrominoes.T
         elif type(_tetromino) == L:
-            color = colors.Tetrominos.L
+            color = colors.Tetrominoes.L
         elif type(_tetromino) == J:
-            color = colors.Tetrominos.J
+            color = colors.Tetrominoes.J
         elif type(_tetromino) == S:
-            color = colors.Tetrominos.S
+            color = colors.Tetrominoes.S
         elif type(_tetromino) == Z:
-            color = colors.Tetrominos.Z
+            color = colors.Tetrominoes.Z
 
         for x in range(
                 _tetromino.rect.x, _tetromino.rect.x + _tetromino.image.get_width(), self.__constants.block_size):
@@ -251,7 +257,7 @@ class Game:
             for col in range(1, int(self.__constants.playing_area_right / self.__constants.block_size)):
                 rect = pg.rect.Rect((col * self.__constants.block_size, row * self.__constants.block_size,
                                      self.__constants.block_size, self.__constants.block_size))
-                sprite = SingleBlock(self.__window, self.__constants, self.__all_sprites, colors.Tetrominos.Square)
+                sprite = SingleBlock(self.__window, self.__constants, self.__all_sprites, colors.Tetrominoes.Square)
                 sprite.rect = rect
                 does_collide, colliding_sprite = Tetromino.does_collide(sprite, _all_sprites)
                 if does_collide:
@@ -292,12 +298,12 @@ class Game:
         self.__window.blit(text_surface, (x, y))
 
     def __pause_game(self):
-        text_surface_title = self.__fonts.game_over.render("Game paused", True, colors.Constants.RED)
-        text_surface_title_width = text_surface_title.get_width()
-        text_surface_title_height = text_surface_title.get_height()
-        text_surface_title_x = int(round(self.__constants.window_width / 2)) - int(round(text_surface_title_width / 2))
-        text_surface_title_y = int(round(self.__constants.window_height / 3)) - int(round(text_surface_title_height / 2))
+        text_surface = self.__fonts.game_over.render("Game paused", True, colors.Constants.RED)
+        width = text_surface.get_width()
+        height = text_surface.get_height()
+        x = int(round(self.__constants.window_width / 2)) - int(round(width / 2))
+        y = int(round(self.__constants.window_height / 3)) - int(round(height / 2))
         self.__sidebar.set_level(self.__level)
         self.__sidebar.set_points(self.__points)
         self.__sidebar.set_next_tetromino(0)
-        self.__window.blit(text_surface_title, (text_surface_title_x, text_surface_title_y))
+        self.__window.blit(text_surface, (x, y))

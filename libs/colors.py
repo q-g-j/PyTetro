@@ -25,7 +25,7 @@ class Frame:
         fg_square = (128, 128, 128)
 
 
-class Tetrominos:
+class Tetrominoes:
     # Blue:
     class Straight:
         bg_topleft = (128, 179, 255)

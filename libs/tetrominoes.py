@@ -64,6 +64,17 @@ class Tetromino(pg.sprite.Sprite):
                                  len(self.shapes[self.current_shape]) * self.constants.block_size))
         self.draw()
 
+    def rotate_left(self):
+        self.__rotate('left')
+        if self.rect.y > self.constants.playing_area_bottom - self.image.get_height() or \
+                self.rect.x < self.constants.playing_area_left or \
+                self.rect.x > self.constants.playing_area_right - self.image.get_width():
+            self.__rotate('right')
+        else:
+            does_collide, colliding_sprite = self.does_collide(self.all_sprites)
+            if does_collide:
+                self.__rotate('right')
+
     def rotate_right(self):
         self.__rotate('right')
         if self.rect.y > self.constants.playing_area_bottom - self.image.get_height() or \
@@ -153,7 +164,7 @@ class SingleBlock(Tetromino):
 
 class Straight(Tetromino):
     def __init__(self, _window, _constants, _all_sprites):
-        super(Straight, self).__init__(_window, _constants, _all_sprites, colors.Tetrominos.Straight)
+        super(Straight, self).__init__(_window, _constants, _all_sprites, colors.Tetrominoes.Straight)
         self.shapes = [
             [
                 [0, 1, 0, 0],
@@ -188,7 +199,7 @@ class Straight(Tetromino):
 
 class Square(Tetromino):
     def __init__(self, _window, _constants, _all_sprites):
-        super(Square, self).__init__(_window, _constants, _all_sprites, colors.Tetrominos.Square)
+        super(Square, self).__init__(_window, _constants, _all_sprites, colors.Tetrominoes.Square)
         self.shapes = [
             [
                 [1, 1],
@@ -209,7 +220,7 @@ class Square(Tetromino):
 
 class T(Tetromino):
     def __init__(self, _window, _constants, _all_sprites):
-        super(T, self).__init__(_window, _constants, _all_sprites, colors.Tetrominos.T)
+        super(T, self).__init__(_window, _constants, _all_sprites, colors.Tetrominoes.T)
         self.shapes = [
             [
                 [1, 1, 1],
@@ -239,7 +250,7 @@ class T(Tetromino):
 
 class L(Tetromino):
     def __init__(self, _window, _constants, _all_sprites):
-        super(L, self).__init__(_window, _constants, _all_sprites, colors.Tetrominos.L)
+        super(L, self).__init__(_window, _constants, _all_sprites, colors.Tetrominoes.L)
         self.shapes = [
             [
                 [1, 0],
@@ -269,7 +280,7 @@ class L(Tetromino):
 
 class J(Tetromino):
     def __init__(self, _window, _constants, _all_sprites):
-        super(J, self).__init__(_window, _constants, _all_sprites, colors.Tetrominos.J)
+        super(J, self).__init__(_window, _constants, _all_sprites, colors.Tetrominoes.J)
         self.shapes = [
             [
                 [0, 0, 1, 0],
@@ -300,7 +311,7 @@ class J(Tetromino):
 
 class S(Tetromino):
     def __init__(self, _window, _constants, _all_sprites):
-        super(S, self).__init__(_window, _constants, _all_sprites, colors.Tetrominos.S)
+        super(S, self).__init__(_window, _constants, _all_sprites, colors.Tetrominoes.S)
         self.shapes = [
             [
                 [0, 1, 1],
@@ -330,7 +341,7 @@ class S(Tetromino):
 
 class Z(Tetromino):
     def __init__(self, _window, _constants, _all_sprites):
-        super(Z, self).__init__(_window, _constants, _all_sprites, colors.Tetrominos.Z)
+        super(Z, self).__init__(_window, _constants, _all_sprites, colors.Tetrominoes.Z)
         self.shapes = [
             [
                 [1, 1, 0],

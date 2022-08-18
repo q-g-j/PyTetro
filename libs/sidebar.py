@@ -3,7 +3,7 @@
 
 from libs.fonts import *
 from libs.constants import *
-from libs.tetrominos import *
+from libs.tetrominoes import *
 
 
 class SideBar:
