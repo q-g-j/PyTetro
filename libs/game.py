@@ -58,18 +58,24 @@ class Game:
                             if counter_has_lost == 0 \
                                     and not is_game_paused \
                                     and counter_print_game_over == 0 \
-                                    and current_tetromino is not None:
+                                    and current_tetromino is not None \
+                                    and counter_at_bottom < int(round(self.__constants.fps / 3)):
                                 if not current_tetromino.would_collide_left(self.__all_sprites):
                                     pg.key.set_repeat(200, 50)
                                     current_tetromino.move_left()
+                                    if not current_tetromino.would_collide_down(self.__all_sprites):
+                                        counter_at_bottom = 0
                         elif pressed_keys[pg.K_RIGHT] or pressed_keys[pg.K_l]:
                             if counter_has_lost == 0 \
                                     and not is_game_paused \
                                     and counter_print_game_over == 0 \
-                                    and current_tetromino is not None:
+                                    and current_tetromino is not None \
+                                    and counter_at_bottom < int(round(self.__constants.fps / 3)):
                                 if not current_tetromino.would_collide_right(self.__all_sprites):
                                     pg.key.set_repeat(200, 50)
                                     current_tetromino.move_right()
+                                    if not current_tetromino.would_collide_down(self.__all_sprites):
+                                        counter_at_bottom = 0
                         if (pressed_keys[pg.K_DOWN] or pressed_keys[pg.K_k]) and not pressed_keys[pg.K_SPACE]:
                             if not is_rotate_key_pressed \
                                     and counter_has_lost == 0 \
@@ -87,7 +93,8 @@ class Game:
                                 is_rotate_key_pressed = True
                                 current_tetromino.rotate_right()
                         if pressed_keys[pg.K_SPACE]:
-                            if counter_has_lost == 0 \
+                            if not is_rotate_key_pressed \
+                                    and counter_has_lost == 0 \
                                     and not is_game_paused \
                                     and counter_print_game_over == 0 \
                                     and current_tetromino is not None:
