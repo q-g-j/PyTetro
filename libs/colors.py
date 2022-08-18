@@ -6,6 +6,7 @@ class Constants:
     WHITE = (255, 255, 255)
     SCREEN = (0, 0, 0)
     RED = (255, 0, 0)
+    BLUE = (0, 102, 255)
     LIGHT_RED = (255, 153, 153)
 
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import datetime
 import uuid
 import random
 
@@ -35,6 +35,7 @@ class Game:
         game_over_tetromino_nums = [x for x in range(1, 8)]
         next_tetromino_num = self.__random.randint(1, 7)
 
+        is_game_paused = False
         counter_move_down = 0
         counter_at_bottom = 0
         counter_drop = 0
@@ -46,30 +47,40 @@ class Game:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     is_running = False
-                if is_running \
-                        and current_tetromino is not None \
-                        and counter_has_lost == 0 \
-                        and counter_print_game_over == 0:
+                if is_running:
                     if event.type == pg.KEYUP:
                         is_key_up_pressed = False
                     elif event.type == pg.KEYDOWN:
                         pressed_keys = pg.key.get_pressed()
-                        if pressed_keys[pg.K_LEFT] or pressed_keys[pg.K_j]:
-                            if not current_tetromino.would_collide_left(self.__all_sprites):
-                                pg.key.set_repeat(200, 50)
-                                current_tetromino.move_left()
-                                counter_at_bottom = 0
+                        if pressed_keys[pg.K_PAUSE] or pressed_keys[pg.K_p] or pressed_keys[pg.K_SPACE]:
+                            is_game_paused = not is_game_paused
+                        elif pressed_keys[pg.K_LEFT] or pressed_keys[pg.K_j]:
+                            if counter_has_lost == 0 \
+                                    and counter_print_game_over == 0 \
+                                    and current_tetromino is not None:
+                                if not current_tetromino.would_collide_left(self.__all_sprites):
+                                    pg.key.set_repeat(200, 50)
+                                    current_tetromino.move_left()
+                                    counter_at_bottom = 0
                         elif pressed_keys[pg.K_RIGHT] or pressed_keys[pg.K_l]:
-                            if not current_tetromino.would_collide_right(self.__all_sprites):
-                                pg.key.set_repeat(200, 50)
-                                current_tetromino.move_right()
-                                counter_at_bottom = 0
+                            if counter_has_lost == 0 \
+                                    and counter_print_game_over == 0 \
+                                    and current_tetromino is not None:
+                                if not current_tetromino.would_collide_right(self.__all_sprites):
+                                    pg.key.set_repeat(200, 50)
+                                    current_tetromino.move_right()
+                                    counter_at_bottom = 0
                         elif (pressed_keys[pg.K_UP] or pressed_keys[pg.K_i]) and not is_key_up_pressed:
-                            is_key_up_pressed = True
-                            current_tetromino.rotate_right()
-                            counter_at_bottom = 0
+                            if counter_has_lost == 0 \
+                                    and counter_print_game_over == 0 \
+                                    and current_tetromino is not None:
+                                is_key_up_pressed = True
+                                current_tetromino.rotate_right()
+                                counter_at_bottom = 0
                         elif pressed_keys[pg.K_DOWN] or pressed_keys[pg.K_k]:
-                            if counter_has_lost == 0:
+                            if counter_has_lost == 0 \
+                                    and counter_print_game_over == 0 \
+                                    and current_tetromino is not None:
                                 if not current_tetromino.would_collide_down(self.__all_sprites):
                                     pg.key.set_repeat(200, 30)
                                     current_tetromino.move_down()
@@ -78,6 +89,7 @@ class Game:
                 self.__window.fill(colors.Constants.SCREEN)
 
             if is_running \
+                    and not is_game_paused \
                     and counter_print_game_over == 0 \
                     and counter_at_bottom == 0 \
                     and counter_drop == 0:
@@ -100,6 +112,7 @@ class Game:
                 counter_move_down += 1
 
             if is_running \
+                    and not is_game_paused \
                     and counter_has_lost != 0:
                 counter_has_lost += 1
                 if counter_has_lost % int(round(self.__constants.fps / 2)) == 0:
@@ -109,8 +122,10 @@ class Game:
                         if type(tetromino) != FrameBlock:
                             tetromino.kill()
                     counter_print_game_over = 1
+                    counter_has_lost = 0
 
             if is_running \
+                    and not is_game_paused \
                     and counter_print_game_over != 0:
                 counter_print_game_over += 1
                 self.__print_game_over()
@@ -118,16 +133,18 @@ class Game:
                     return True
 
             if is_running \
+                    and not is_game_paused \
                     and counter_move_down != 0:
                 if counter_has_lost == 0 \
                         and counter_print_game_over == 0 \
-                        and counter_move_down % int(round(self.__constants.fps / (self.__level + 1) / 1)) == 0:
+                        and counter_move_down % int(round(self.__constants.fps / (self.__level + 1) / 0.5)) == 0:
                     if not current_tetromino.would_collide_down(self.__all_sprites):
                         current_tetromino.move_down()
                     else:
                         counter_move_down = 0
 
             if is_running \
+                    and not is_game_paused \
                     and counter_at_bottom != 0:
                 counter_at_bottom += 1
                 if counter_at_bottom == int(round(self.__constants.fps / 3)):
@@ -140,6 +157,7 @@ class Game:
                         counter_move_down = 0
 
             if is_running \
+                    and not is_game_paused \
                     and counter_drop != 0:
                 counter_drop += 1
                 if counter_drop == int(round(self.__constants.fps / 3)):
@@ -157,6 +175,8 @@ class Game:
             if is_running:
                 self.__sidebar.draw()
                 self.__all_sprites.draw(self.__window)
+                if is_game_paused:
+                    self.__pause_game()
                 pg.display.update()
                 self.__clock.tick(self.__constants.fps)
 
@@ -235,44 +255,17 @@ class Game:
 
             if len(row_blocks_rect_list) == 12:
                 count_removed_rows += 1
-                has_removed = True
                 for colliding_sprite in row_blocks_rect_list:
                     colliding_sprite.kill()
                 self.__drop_after_remove(_all_sprites, row * self.__constants.block_size)
 
-        # if count_removed_rows == 1:
-        self.__points += int(((count_removed_rows ** 2) * 10) / 10) * 10
+        if count_removed_rows != 0:
+            has_removed = True
+            self.__points += int(((count_removed_rows ** 2) * 10) / 10) * 10
 
-        actual_points = self.__points + self.__initial_level * 500 - 500
-
-        if 500 <= actual_points < 1000:
-            self.__level = 2
-        elif 1000 <= actual_points < 1500:
-            self.__level = 3
-        elif 1500 <= actual_points < 2000:
-            self.__level = 4
-        elif 2000 <= actual_points < 2500:
-            self.__level = 5
-        elif 2500 <= actual_points < 3000:
-            self.__level = 6
-        elif 3000 <= actual_points < 3500:
-            self.__level = 7
-        elif 3500 <= actual_points < 4000:
-            self.__level = 8
-        elif 4000 <= actual_points < 4500:
-            self.__level = 9
-        elif 4500 <= actual_points < 5000:
-            self.__level = 10
-        elif 5000 <= actual_points < 5500:
-            self.__level = 11
-        elif 5500 <= actual_points < 6000:
-            self.__level = 12
-        elif 6500 <= actual_points < 7000:
-            self.__level = 13
-        elif 7000 <= actual_points < 7500:
-            self.__level = 14
-        elif 7500 <= actual_points < 8000:
-            self.__level = 15
+        if self.__level < self.__constants.max_level:
+            if self.__points >= self.__level * 500:
+                self.__level += 1
 
         return has_removed
 
@@ -293,3 +286,14 @@ class Game:
         self.__sidebar.set_points(self.__points)
         self.__sidebar.set_next_tetromino(0)
         self.__window.blit(text_surface, (x, y))
+
+    def __pause_game(self):
+        text_surface_title = self.__fonts.game_over.render("Game paused", True, colors.Constants.RED)
+        text_surface_title_width = text_surface_title.get_width()
+        text_surface_title_height = text_surface_title.get_height()
+        text_surface_title_x = int(round(self.__constants.window_width / 2)) - int(round(text_surface_title_width / 2))
+        text_surface_title_y = int(round(self.__constants.window_height / 3)) - int(round(text_surface_title_height / 2))
+        self.__sidebar.set_level(self.__level)
+        self.__sidebar.set_points(self.__points)
+        self.__sidebar.set_next_tetromino(0)
+        self.__window.blit(text_surface_title, (text_surface_title_x, text_surface_title_y))

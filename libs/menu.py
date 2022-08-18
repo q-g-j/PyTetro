@@ -82,7 +82,7 @@ class MainMenu:
                             self.__menu_items[selected_menu_item].color = colors.Menu.MenuItem.bg_selected
                             self.__menu_items[selected_menu_item + 1].is_selected = False
                             self.__menu_items[selected_menu_item + 1].color = colors.Menu.MenuItem.bg_unselected
-                    elif pressed_keys[pg.K_RETURN] or pressed_keys[pg.K_SPACE]:
+                    elif pressed_keys[pg.K_RETURN]:
                         for index in range(len(self.__menu_items)):
                             if self.__menu_items[index].is_selected:
                                 if index == 0:
@@ -149,7 +149,7 @@ class DifficultyMenu:
 
         self.__difficulty_selector = DifficultySelector(self.__window, self.__constants)
         self.__difficulty_numbers = list()
-        for i in range(1, 16):
+        for i in range(1, self.__constants.max_level - 1):
             number = DifficultyNumber(self.__window, self.__constants, str(i))
             self.__difficulty_numbers.append(number)
 
@@ -167,12 +167,12 @@ class DifficultyMenu:
                 elif event.type == pg.KEYDOWN:
                     pressed_keys = pg.key.get_pressed()
                     if pressed_keys[pg.K_DOWN] or pressed_keys[pg.K_k]:
-                        if self.__difficulty < 15:
+                        if self.__difficulty < self.__constants.max_level:
                             self.__difficulty += 1
                     elif pressed_keys[pg.K_UP] or pressed_keys[pg.K_i]:
                         if self.__difficulty > 1:
                             self.__difficulty -= 1
-                    elif pressed_keys[pg.K_RETURN] or pressed_keys[pg.K_SPACE]:
+                    elif pressed_keys[pg.K_RETURN]:
                         return self.__difficulty
 
             if is_running:
@@ -185,7 +185,7 @@ class DifficultyMenu:
 
                     self.__difficulty_numbers[self.__difficulty].position = 1
                     self.__difficulty_numbers[self.__difficulty].draw()
-                elif 1 < self.__difficulty < 15:
+                elif 1 < self.__difficulty < self.__constants.max_level:
                     self.__difficulty_numbers[self.__difficulty - 2].position = -1
                     self.__difficulty_numbers[self.__difficulty - 2].draw()
 
@@ -194,7 +194,7 @@ class DifficultyMenu:
 
                     self.__difficulty_numbers[self.__difficulty].position = 1
                     self.__difficulty_numbers[self.__difficulty].draw()
-                elif self.__difficulty == 15:
+                elif self.__difficulty == self.__constants.max_level:
                     self.__difficulty_numbers[self.__difficulty - 2].position = -1
                     self.__difficulty_numbers[self.__difficulty - 2].draw()
 

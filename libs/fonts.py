@@ -28,3 +28,13 @@ class Fonts:
         self.sidebar_points = pg.font.Font(
             Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf',
             font_size_sidebar_points)
+
+        font_size_game_paused_title = int(round(constants.playing_area_right / 8))
+        self.game_paused_title = pg.font.Font(
+            Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf',
+            font_size_game_paused_title)
+
+        font_size_game_paused_press_key = int(round(constants.playing_area_right / 12))
+        self.game_paused_press_key = pg.font.Font(
+            Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf',
+            font_size_game_paused_press_key)
