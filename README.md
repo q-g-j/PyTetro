@@ -15,15 +15,15 @@ Controls:
 ### Menu navigation:
 |Key|Action|
 |-|-|
-|up arrow or "I"|navigate up|
-|down arrow or "K"|navigate down|
-|enter|apply selection|
+|UP or "I"|navigate up|
+|DOWN or "K"|navigate down|
+|ENTER|apply selection|
 
 ### Ingame control:
 |Key|Action|
 |-|-|
-|left arrow or "J"|move tetromino left|
-|right arrow or "L"|move tetromino right|
-|down arrow or "K"|move tetromino down|
-|up arrow or "I"|rotate tetromino clockwise|
-|space or pause or "P"|pause the game|
+|LEFT or "J"|move tetromino left|
+|RIGHT or "L"|move tetromino right|
+|DOWN or "K"|move tetromino down|
+|UP or "I"|rotate tetromino clockwise|
+|SPACE or PAUSE or "P"|pause the game|
