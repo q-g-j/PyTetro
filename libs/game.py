@@ -24,6 +24,7 @@ class Game:
         self.__all_sprites_list = list()
 
         self.__initial_level = _level
+
         self.__points = 0
 
     def start(self) -> bool:
@@ -281,7 +282,7 @@ class Game:
             self.__points += int(((count_removed_rows ** 2) * 10) / 10) * 10
 
         if self.__level < self.__constants.max_level:
-            if self.__points >= self.__level * 500:
+            if self.__points >= self.__level * 500 - self.__initial_level * 500:
                 self.__level += 1
 
         return has_removed
