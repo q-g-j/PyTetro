@@ -33,15 +33,28 @@ class Game:
         is_rotate_key_pressed = False
         current_tetromino = None
         pg.key.set_repeat(200, 50)
-        game_over_tetromino_nums = [x for x in range(1, 8)]
+        game_over_tetromino_counter = 0
+        game_over_tetrominoes = [x for x in range(1, 8)]
         next_tetromino_num = self.__random.randint(1, 7)
 
         is_game_paused = False
-        counter_move_down = 0
-        counter_at_bottom = 0
-        counter_drop = 0
-        counter_has_lost = 0
-        counter_print_game_over = 0
+
+        has_lost = False
+        do_print_game_over = False
+        do_move_down_tetromino = False
+        is_tetromino_at_bottom = False
+        do_drop_tetrominoes = False
+        delay_has_lost = 500 - int(round((self.__level - 1) * 15))
+        delay_print_game_over = 5000
+        delay_tetromino_move_down = 500 - int(round((self.__level - 1) * 24))
+        delay_tetromino_at_bottom = 500 - int(round((self.__level - 1) * 15))
+        delay_drop_tetrominoes = 500 - int(round((self.__level - 1) * 15))
+
+        start_tetromino_move_down = 0
+        start_tetromino_at_bottom = 0
+        start_drop_tetrominoes = 0
+        start_has_lost = 0
+        start_print_game_over = 0
 
         is_running = True
         while is_running:
@@ -55,36 +68,36 @@ class Game:
                         pressed_keys = pg.key.get_pressed()
                         if pressed_keys[pg.K_PAUSE] or pressed_keys[pg.K_p]:
                             is_game_paused = not is_game_paused
-                        elif counter_has_lost == 0 \
+                        elif has_lost == 0 \
                                 and not is_game_paused \
-                                and counter_print_game_over == 0 \
+                                and not do_print_game_over \
                                 and current_tetromino is not None:
                             if pressed_keys[pg.K_LEFT] or pressed_keys[pg.K_j]:
                                 if not current_tetromino.would_collide_left(self.__all_sprites):
                                     pg.key.set_repeat(200, 50)
                                     current_tetromino.move_left()
                                     if not current_tetromino.would_collide_down(self.__all_sprites):
-                                        counter_at_bottom = 0
+                                        is_tetromino_at_bottom = False
                             elif pressed_keys[pg.K_RIGHT] or pressed_keys[pg.K_l]:
                                 if not current_tetromino.would_collide_right(self.__all_sprites):
                                     pg.key.set_repeat(200, 50)
                                     current_tetromino.move_right()
                                     if not current_tetromino.would_collide_down(self.__all_sprites):
-                                        counter_at_bottom = 0
+                                        is_tetromino_at_bottom = False
                             if not is_rotate_key_pressed:
                                 if (pressed_keys[pg.K_DOWN] or pressed_keys[pg.K_k]) and not pressed_keys[pg.K_SPACE]:
                                     is_rotate_key_pressed = True
                                     current_tetromino.rotate_left()
                                     if not current_tetromino.would_collide_down(self.__all_sprites):
-                                        counter_at_bottom = 0
+                                        is_tetromino_at_bottom = False
                                 elif (pressed_keys[pg.K_UP] or pressed_keys[pg.K_i]) and not pressed_keys[pg.K_SPACE]:
                                     is_rotate_key_pressed = True
                                     current_tetromino.rotate_right()
                                     if not current_tetromino.would_collide_down(self.__all_sprites):
-                                        counter_at_bottom = 0
+                                        is_tetromino_at_bottom = False
                             if pressed_keys[pg.K_SPACE]:
                                 if not current_tetromino.would_collide_down(self.__all_sprites):
-                                    pg.key.set_repeat(200, 30)
+                                    pg.key.set_repeat(150, 25)
                                     current_tetromino.move_down()
 
             if is_running:
@@ -92,79 +105,86 @@ class Game:
 
             if not is_game_paused:
                 if is_running \
-                        and counter_print_game_over == 0:
+                        and not do_print_game_over \
+                        and not do_drop_tetrominoes:
                     if current_tetromino is None:
-                        if counter_has_lost != 0:
-                            tetromino_num_index = int(counter_has_lost / int(round(self.__constants.fps / 2)))
-                            tetromino_num = game_over_tetromino_nums[tetromino_num_index - 1]
+                        if has_lost:
+                            tetromino_num = game_over_tetrominoes[game_over_tetromino_counter - 1]
                         else:
                             tetromino_num = next_tetromino_num
                             # tetromino_num = 1
                         current_tetromino = self.__create_tetromino(tetromino_num)
                         next_tetromino_num = self.__random.randint(1, 7)
-                        if counter_has_lost == 0:
+                        if not has_lost:
                             does_collide, colliding_tetromino = current_tetromino.does_collide(self.__all_sprites)
                             if does_collide:
-                                counter_has_lost = 1
+                                has_lost = True
+                                start_has_lost = pg.time.get_ticks()
                     elif current_tetromino.would_collide_down(self.__all_sprites) \
-                            and counter_has_lost == 0 \
-                            and counter_at_bottom == 0:
-                        counter_at_bottom = 1
+                            and not has_lost \
+                            and not is_tetromino_at_bottom:
+                        is_tetromino_at_bottom = True
+                        start_tetromino_at_bottom = pg.time.get_ticks()
 
-                    counter_move_down += 1
+                    if not do_move_down_tetromino:
+                        do_move_down_tetromino = True
+                        start_tetromino_move_down = pg.time.get_ticks()
 
                 if is_running \
-                        and counter_has_lost != 0:
-                    counter_has_lost += 1
-                    if counter_has_lost % int(round(self.__constants.fps / 2)) == 0:
+                        and has_lost:
+                    if pg.time.get_ticks() - start_has_lost > delay_has_lost:
+                        if type(current_tetromino) == Straight:
+                            game_over_tetrominoes[0] = 3
+                            game_over_tetrominoes[2] = 1
                         current_tetromino = None
-                    if counter_has_lost == int(round(self.__constants.fps / 2)) * 8:
+                        start_has_lost = pg.time.get_ticks()
+                        game_over_tetromino_counter += 1
+                    if game_over_tetromino_counter == 8:
                         for tetromino in self.__all_sprites:
                             if type(tetromino) != FrameBlock:
                                 tetromino.kill()
-                        counter_print_game_over = 1
-                        counter_has_lost = 0
+                        do_print_game_over = True
+                        start_print_game_over = pg.time.get_ticks()
+                        has_lost = False
 
                 if is_running \
-                        and counter_print_game_over != 0:
-                    counter_print_game_over += 1
+                        and do_print_game_over:
                     self.__print_game_over()
-                    if counter_print_game_over == int(round(self.__constants.fps / 2)) * 8:
+                    if pg.time.get_ticks() - start_print_game_over > delay_print_game_over:
                         return True
 
                 if is_running \
-                        and counter_move_down != 0:
-                    if counter_has_lost == 0 \
-                            and counter_print_game_over == 0 \
-                            and counter_move_down % int(round(self.__constants.fps / (self.__level + 1) / 0.5)) == 0:
-                        if not current_tetromino.would_collide_down(self.__all_sprites):
-                            current_tetromino.move_down()
-                        else:
-                            counter_move_down = 0
+                        and do_move_down_tetromino \
+                        and not has_lost \
+                        and not do_print_game_over \
+                        and pg.time.get_ticks() - start_tetromino_move_down > delay_tetromino_move_down:
+                    if not current_tetromino.would_collide_down(self.__all_sprites):
+                        current_tetromino.move_down()
+                    do_move_down_tetromino = False
 
                 if is_running \
-                        and counter_at_bottom != 0:
-                    counter_at_bottom += 1
-                    if counter_at_bottom == int(round(self.__constants.fps / 3)):
+                        and is_tetromino_at_bottom:
+                    if pg.time.get_ticks() - start_tetromino_at_bottom > delay_tetromino_at_bottom:
                         if current_tetromino.would_collide_down(self.__all_sprites):
                             self.__change_tetromino_to_single_blocks(current_tetromino, self.__all_sprites)
                             if self.__remove_full_rows(self.__all_sprites):
-                                counter_drop = 1
+                                do_drop_tetrominoes = True
+                                start_drop_tetrominoes = pg.time.get_ticks()
+
                             current_tetromino = None
-                            counter_at_bottom = 0
-                            counter_move_down = 0
+                            is_tetromino_at_bottom = False
+                            do_move_down_tetromino = False
 
                 if is_running \
-                        and counter_drop != 0:
-                    counter_drop += 1
-                    if counter_drop == int(round(self.__constants.fps / 3)):
-                        counter_drop = 0
+                        and do_drop_tetrominoes:
+                    if pg.time.get_ticks() - start_drop_tetrominoes > delay_drop_tetrominoes:
+                        do_drop_tetrominoes = False
 
             if is_running \
-                    and counter_print_game_over == 0:
+                    and not do_print_game_over:
                 self.__sidebar.set_level(self.__level)
                 self.__sidebar.set_points(self.__points)
-                if counter_has_lost == 0:
+                if not has_lost:
                     self.__sidebar.set_next_tetromino(next_tetromino_num)
                 else:
                     self.__sidebar.set_next_tetromino(0)
@@ -274,7 +294,7 @@ class Game:
                     tetromino.move_down()
 
     def __print_game_over(self):
-        text_surface = self.__fonts.game_over.render("Game Over", True, colors.Constants.RED)
+        text_surface = self.__fonts.game_over.render("game over", True, colors.Constants.RED)
         width = text_surface.get_width()
         height = text_surface.get_height()
         x = int(round(self.__constants.window_width / 2)) - int(round(width / 2))
