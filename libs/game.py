@@ -25,19 +25,21 @@ class Game:
 
         self.__initial_level = _level
 
+        self.__removed_rows_per_level = 0
+        self.__removed_rows_total = 0
         self.__points = 0
 
     def start(self) -> bool:
         return self.__game_loop()
 
     def __game_loop(self) -> bool:
-        is_rotate_key_pressed = False
         current_tetromino = None
         pg.key.set_repeat(200, 50)
         game_over_tetromino_counter = 0
         game_over_tetrominoes = [x for x in range(1, 8)]
         next_tetromino_num = self.__random.randint(1, 7)
 
+        is_rotate_key_pressed = False
         is_game_paused = False
 
         has_lost = False
@@ -45,6 +47,7 @@ class Game:
         do_move_down_tetromino = False
         is_tetromino_at_bottom = False
         do_drop_tetrominoes = False
+
         delay_has_lost = 500 - int(round((self.__level - 1) * 15))
         delay_print_game_over = 5000
         delay_tetromino_move_down = 500 - int(round((self.__level - 1) * 24))
@@ -281,9 +284,13 @@ class Game:
             has_removed = True
             self.__points += int(((count_removed_rows ** 2) * 10) / 10) * 10
 
-        if self.__level < self.__constants.max_level:
-            if self.__points >= self.__level * 500 - self.__initial_level * 500:
-                self.__level += 1
+            if self.__level < self.__constants.max_level:
+                self.__removed_rows_per_level += count_removed_rows
+                self.__removed_rows_total += count_removed_rows
+                rows_needed = self.__level - 1 + self.__constants.min_rows_needed_for_level_up
+                if self.__removed_rows_per_level >= rows_needed:
+                    self.__removed_rows_per_level = self.__removed_rows_per_level - rows_needed
+                    self.__level += 1
 
         return has_removed
 
