@@ -10,6 +10,12 @@ class Constants:
         self.max_level = 20
         self.min_rows_needed_for_level_up = 10
 
+        self.level_diff_tetromino_move_down_ms = 25
+        self.level_diff_tetromino_at_bottom_ms = 15
+        self.level_diff_drop_tetrominoes_ms = 15
+        self.level_diff_has_lost_ms = 15
+        self.delay_print_game_over_ms = 5000
+
         self.block_size, self.window_width, self.window_height = self.__compute_sizes()
         self.sidebar_left = self.window_width
         self.playing_area_top = 0

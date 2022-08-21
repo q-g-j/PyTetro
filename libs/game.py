@@ -29,6 +29,8 @@ class Game:
         self.__removed_rows_total = 0
         self.__points = 0
 
+        self.__calc_delays()
+
     def start(self) -> bool:
         return self.__game_loop()
 
@@ -47,23 +49,6 @@ class Game:
         do_drop_tetrominoes = False
         has_lost = False
         do_print_game_over = False
-
-        level_diff_tetromino_move_down_ms = 25
-        level_diff_tetromino_at_bottom_ms = 15
-        level_diff_drop_tetrominoes_ms = 15
-        level_diff_has_lost_ms = 15
-        delay_print_game_over_ms = 5000
-
-        delay_tetromino_move_down_fps = int(round(
-            self.__constants.fps * (500 - (self.__level - 1) * level_diff_tetromino_move_down_ms) / 1000))
-        delay_tetromino_at_bottom_fps = int(round(
-            self.__constants.fps * (500 - (self.__level - 1) * level_diff_tetromino_at_bottom_ms) / 1000))
-        delay_drop_tetrominoes_fps = int(round(
-            self.__constants.fps * (500 - (self.__level - 1) * level_diff_drop_tetrominoes_ms) / 1000))
-        delay_has_lost_fps = int(round(
-            self.__constants.fps * (500 - (self.__level - 1) * level_diff_has_lost_ms) / 1000))
-        delay_print_game_over_fps = int(round(
-            self.__constants.fps * (delay_print_game_over_ms / 1000)))
 
         counter_tetromino_move_down = 0
         counter_tetromino_at_bottom = 0
@@ -118,6 +103,9 @@ class Game:
             if is_running:
                 self.__window.fill(colors.Constants.SCREEN)
 
+            if is_running:
+                self.__calc_delays()
+
             if not is_game_paused:
                 if is_running \
                         and not do_print_game_over \
@@ -147,27 +135,27 @@ class Game:
 
                 if is_running \
                         and do_move_down_tetromino:
-                    if counter_tetromino_move_down < delay_tetromino_move_down_fps:
+                    if counter_tetromino_move_down < self.__delay_tetromino_move_down_fps:
                         counter_tetromino_move_down += 1
 
                 if is_running \
                         and is_tetromino_at_bottom:
-                    if counter_tetromino_at_bottom < delay_tetromino_at_bottom_fps:
+                    if counter_tetromino_at_bottom < self.__delay_tetromino_at_bottom_fps:
                         counter_tetromino_at_bottom += 1
 
                 if is_running \
                         and has_lost:
-                    if counter_has_lost < delay_has_lost_fps:
+                    if counter_has_lost < self.__delay_has_lost_fps:
                         counter_has_lost += 1
 
                 if is_running \
                         and do_print_game_over:
-                    if counter_print_game_over < delay_print_game_over_fps:
+                    if counter_print_game_over < self.__delay_print_game_over_fps:
                         counter_print_game_over += 1
 
                 if is_running \
                         and has_lost:
-                    if counter_has_lost == delay_has_lost_fps:
+                    if counter_has_lost == self.__delay_has_lost_fps:
                         if type(current_tetromino) == Straight:
                             game_over_tetrominoes[0] = 3
                             game_over_tetrominoes[2] = 1
@@ -184,14 +172,14 @@ class Game:
                 if is_running \
                         and do_print_game_over:
                     self.__print_game_over()
-                    if counter_print_game_over == delay_print_game_over_fps:
+                    if counter_print_game_over == self.__delay_print_game_over_fps:
                         return True
 
                 if is_running \
                         and do_move_down_tetromino \
                         and not has_lost \
                         and not do_print_game_over \
-                        and counter_tetromino_move_down == delay_tetromino_move_down_fps:
+                        and counter_tetromino_move_down == self.__delay_tetromino_move_down_fps:
                     if not current_tetromino.would_collide_down(self.__all_sprites):
                         current_tetromino.move_down()
                     do_move_down_tetromino = False
@@ -199,7 +187,7 @@ class Game:
 
                 if is_running \
                         and is_tetromino_at_bottom \
-                        and counter_tetromino_at_bottom == delay_tetromino_at_bottom_fps:
+                        and counter_tetromino_at_bottom == self.__delay_tetromino_at_bottom_fps:
                     if current_tetromino.would_collide_down(self.__all_sprites):
                         self.__change_tetromino_to_single_blocks(current_tetromino, self.__all_sprites)
                         if self.__remove_full_rows(self.__all_sprites):
@@ -212,7 +200,7 @@ class Game:
 
                 if is_running \
                         and do_drop_tetrominoes:
-                    if counter_drop_tetrominoes < delay_drop_tetrominoes_fps:
+                    if counter_drop_tetrominoes < self.__delay_drop_tetrominoes_fps:
                         counter_drop_tetrominoes += 1
                     else:
                         do_drop_tetrominoes = False
@@ -325,9 +313,6 @@ class Game:
                     self.__removed_rows_per_level = self.__removed_rows_per_level - rows_needed
                     self.__level += 1
 
-            print("needed:", self.__level - 1 + self.__constants.min_rows_needed_for_level_up)
-            print("got:", self.__removed_rows_per_level)
-
         return has_removed
 
     @staticmethod
@@ -358,3 +343,19 @@ class Game:
         self.__sidebar.set_points(self.__points)
         self.__sidebar.set_next_tetromino(0)
         self.__window.blit(text_surface, (x, y))
+
+    def __calc_delays(self):
+        self.__delay_tetromino_move_down_fps = int(round(
+            self.__constants.fps * (500 - (self.__level - 1) *
+                                    self.__constants.level_diff_tetromino_move_down_ms) / 1000))
+        self.__delay_tetromino_at_bottom_fps = int(round(
+            self.__constants.fps * (500 - (self.__level - 1) *
+                                    self.__constants.level_diff_tetromino_at_bottom_ms) / 1000))
+        self.__delay_drop_tetrominoes_fps = int(round(
+            self.__constants.fps * (500 - (self.__level - 1) *
+                                    self.__constants.level_diff_drop_tetrominoes_ms) / 1000))
+        self.__delay_has_lost_fps = int(round(
+            self.__constants.fps * (500 - (self.__level - 1) *
+                                    self.__constants.level_diff_has_lost_ms) / 1000))
+        self.__delay_print_game_over_fps = int(round(
+            self.__constants.fps * (self.__constants.delay_print_game_over_ms / 1000)))
