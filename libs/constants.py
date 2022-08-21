@@ -5,10 +5,10 @@ import pygame as pg
 
 class Constants:
     def __init__(self):
-        self.fps = 120
+        self.fps = 500
 
         self.max_level = 20
-        self.min_rows_needed_for_level_up = 10
+        self.min_rows_needed_for_level_up = 5
 
         self.block_size, self.window_width, self.window_height = self.__compute_sizes()
         self.sidebar_left = self.window_width

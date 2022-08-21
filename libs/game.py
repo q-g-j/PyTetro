@@ -50,7 +50,7 @@ class Game:
 
         delay_has_lost = 500 - int(round((self.__level - 1) * 15))
         delay_print_game_over = 5000
-        delay_tetromino_move_down = 500 - int(round((self.__level - 1) * 24))
+        delay_tetromino_move_down = 500 - int(round((self.__level - 1) * 25))
         delay_tetromino_at_bottom = 500 - int(round((self.__level - 1) * 15))
         delay_drop_tetrominoes = 500 - int(round((self.__level - 1) * 15))
 
@@ -282,7 +282,7 @@ class Game:
 
         if count_removed_rows != 0:
             has_removed = True
-            self.__points += int(((count_removed_rows ** 2) * 10) / 10) * 10
+            self.__points += int((count_removed_rows ** 2) * 10)
 
             if self.__level < self.__constants.max_level:
                 self.__removed_rows_per_level += count_removed_rows
