@@ -39,5 +39,5 @@ Controls:
 
 ### Levelling up:
 A level up is achieved as soon as you have managed to remove a certain number of lines.<br/><br/>
-**Formula:** ```current level - 1 + 10``` to reach the next level<br/><br/>
+**Formula:** ```current level - 1 + 10 lines``` to reach the next level<br/><br/>
 The maximum is 20 levels.
