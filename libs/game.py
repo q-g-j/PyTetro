@@ -29,6 +29,12 @@ class Game:
         self.__removed_rows_total = 0
         self.__points = 0
 
+        self.__delay_tetromino_move_down_fps = 0
+        self.__delay_tetromino_at_bottom_fps = 0
+        self.__delay_drop_tetrominoes_fps = 0
+        self.__delay_has_lost_fps = 0
+        self.__delay_print_game_over_fps = 0
+
         self.__calc_delays()
 
     def start(self) -> bool:
@@ -102,9 +108,6 @@ class Game:
 
             if is_running:
                 self.__window.fill(colors.Constants.SCREEN)
-
-            if is_running:
-                self.__calc_delays()
 
             if not is_game_paused:
                 if is_running \
@@ -312,6 +315,7 @@ class Game:
                 if self.__removed_rows_per_level >= rows_needed:
                     self.__removed_rows_per_level = self.__removed_rows_per_level - rows_needed
                     self.__level += 1
+                    self.__calc_delays()
 
         return has_removed
 

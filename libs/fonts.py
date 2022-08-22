@@ -3,10 +3,11 @@
 import pygame as pg
 
 from libs.common import *
+from libs.constants import *
 
 
 class Fonts:
-    def __init__(self, constants):
+    def __init__(self, constants: Constants):
         font_size = int(round(constants.playing_area_right / 14))
         self.main_menu_item = pg.font.Font(
             Common.get_script_path() + '/fonts/gabo___free_elegant_font_by_dannci_d2m28g9.otf', font_size)
