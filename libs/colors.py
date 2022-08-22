@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from dataclasses import dataclass
 
+
+@dataclass
 class Constants:
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
@@ -10,6 +13,7 @@ class Constants:
     LIGHT_RED = (255, 153, 153)
 
 
+@dataclass
 class MenuItem:
     bg_unselected = Constants.RED
     bg_selected = Constants.LIGHT_RED
@@ -17,12 +21,14 @@ class MenuItem:
 
 
 # Grey:
+@dataclass
 class FrameBlock:
     bg_topleft = (217, 217, 217)
     bg_bottomright = (77, 77, 77)
     fg_square = (128, 128, 128)
 
 
+@dataclass
 class TetrominoBase:
     bg_topleft = (0, 0, 0)
     bg_bottomright = (0, 0, 0)
@@ -30,6 +36,7 @@ class TetrominoBase:
 
 
 # Blue:
+@dataclass
 class TetrominoStraight(TetrominoBase):
     bg_topleft = (128, 179, 255)
     bg_bottomright = (0, 51, 128)
@@ -37,6 +44,7 @@ class TetrominoStraight(TetrominoBase):
 
 
 # Green:
+@dataclass
 class TetrominoSquare(TetrominoBase):
     bg_topleft = (128, 255, 170)
     bg_bottomright = (0, 128, 43)
@@ -44,6 +52,7 @@ class TetrominoSquare(TetrominoBase):
 
 
 # Orange:
+@dataclass
 class TetrominoT(TetrominoBase):
     bg_topleft = (255, 204, 128)
     bg_bottomright = (153, 92, 0)
@@ -51,6 +60,7 @@ class TetrominoT(TetrominoBase):
 
 
 # Red:
+@dataclass
 class TetrominoL(TetrominoBase):
     bg_topleft = (255, 179, 179)
     bg_bottomright = (153, 0, 0)
@@ -58,6 +68,7 @@ class TetrominoL(TetrominoBase):
 
 
 # Yellow:
+@dataclass
 class TetrominoJ(TetrominoBase):
     bg_topleft = (255, 255, 179)
     bg_bottomright = (153, 153, 0)
@@ -65,6 +76,7 @@ class TetrominoJ(TetrominoBase):
 
 
 # Cyan:
+@dataclass
 class TetrominoS(TetrominoBase):
     bg_topleft = (179, 255, 255)
     bg_bottomright = (0, 102, 102)
@@ -72,6 +84,7 @@ class TetrominoS(TetrominoBase):
 
 
 # Purple:
+@dataclass
 class TetrominoZ(TetrominoBase):
     bg_topleft = (255, 179, 255)
     bg_bottomright = (77, 0, 77)

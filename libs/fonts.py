@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import pygame as pg
-
 from libs.common import *
 from libs.constants import *
 

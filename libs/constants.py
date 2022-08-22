@@ -8,7 +8,7 @@ class Constants:
         self.fps = 60
 
         self.max_level = 20
-        self.min_rows_needed_for_level_up = 10
+        self.lines_needed_for_first_level_up = 10
 
         self.level_diff_tetromino_move_down_ms = 25
         self.level_diff_tetromino_at_bottom_ms = 15

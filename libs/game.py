@@ -21,9 +21,6 @@ class Game:
         self.__random.seed(uuid.uuid4().int)
         self.__clock = pg.time.Clock()
         self.__fonts = Fonts(self.__constants)
-        self.__all_sprites_list = list()
-
-        self.__initial_level = _level
 
         self.__removed_rows_per_level = 0
         self.__removed_rows_total = 0
@@ -122,8 +119,8 @@ class Game:
                         current_tetromino = self.__create_tetromino(tetromino_num)
                         next_tetromino_num = self.__random.randint(1, 7)
                         if not has_lost:
-                            does_collide, colliding_tetromino = current_tetromino.does_collide(self.__all_sprites)
-                            if does_collide:
+                            colliding_tetromino = current_tetromino.does_collide(self.__all_sprites)
+                            if colliding_tetromino is not None:
                                 has_lost = True
                                 counter_has_lost = 0
                     elif current_tetromino.would_collide_down(self.__all_sprites) \
@@ -192,7 +189,7 @@ class Game:
                         and is_tetromino_at_bottom \
                         and counter_tetromino_at_bottom == self.__delay_tetromino_at_bottom_fps:
                     if current_tetromino.would_collide_down(self.__all_sprites):
-                        self.__change_tetromino_to_single_blocks(current_tetromino, self.__all_sprites)
+                        self.__change_tetromino_to_single_blocks(current_tetromino)
                         if self.__remove_full_rows(self.__all_sprites):
                             do_drop_tetrominoes = True
                             counter_drop_tetrominoes = 0
@@ -254,7 +251,7 @@ class Game:
 
         return current_tetromino
 
-    def __change_tetromino_to_single_blocks(self, _tetromino: Tetromino, _all_sprites: pg.sprite.Group):
+    def __change_tetromino_to_single_blocks(self, _tetromino: Tetromino):
         color = colors.Constants.SCREEN
         if type(_tetromino) == Straight:
             color = colors.TetrominoStraight
@@ -278,9 +275,10 @@ class Game:
                 rect = pg.rect.Rect((x, y, self.__constants.block_size, self.__constants.block_size))
                 sprite = SingleBlock(self.__window, self.__constants, self.__all_sprites, color)
                 sprite.rect = rect
-                does_collide, colliding_sprite = sprite.does_collide(_all_sprites)
-                if does_collide and type(colliding_sprite) != FrameBlock and type(colliding_sprite) != SingleBlock:
-                    _all_sprites.add(sprite)
+                colliding_sprite = sprite.does_collide(self.__all_sprites)
+                if colliding_sprite is not None and type(colliding_sprite) != FrameBlock \
+                        and type(colliding_sprite) != SingleBlock:
+                    self.__all_sprites.add(sprite)
         _tetromino.kill()
 
     def __remove_full_rows(self, _all_sprites: pg.sprite.Group) -> bool:
@@ -294,8 +292,8 @@ class Game:
                                      self.__constants.block_size, self.__constants.block_size))
                 sprite = SingleBlock(self.__window, self.__constants, self.__all_sprites, colors.TetrominoSquare)
                 sprite.rect = rect
-                does_collide, colliding_sprite = Tetromino.does_collide(sprite, _all_sprites)
-                if does_collide:
+                colliding_sprite = Tetromino.does_collide(sprite, _all_sprites)
+                if colliding_sprite is not None:
                     row_blocks_rect_list.append(colliding_sprite)
 
             if len(row_blocks_rect_list) == 12:
@@ -311,7 +309,7 @@ class Game:
             if self.__level < self.__constants.max_level:
                 self.__removed_rows_per_level += count_removed_rows
                 self.__removed_rows_total += count_removed_rows
-                rows_needed = self.__level - 1 + self.__constants.min_rows_needed_for_level_up
+                rows_needed = self.__level - 1 + self.__constants.lines_needed_for_first_level_up
                 if self.__removed_rows_per_level >= rows_needed:
                     self.__removed_rows_per_level = self.__removed_rows_per_level - rows_needed
                     self.__level += 1

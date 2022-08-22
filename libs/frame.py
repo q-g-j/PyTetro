@@ -37,7 +37,7 @@ class Frame:
 
 class FrameBlock(pg.sprite.Sprite):
     def __init__(self, _constants: Constants):
-        super(FrameBlock, self).__init__()
+        super().__init__()
         self.__constants = _constants
 
         self.mask = None

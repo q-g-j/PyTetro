@@ -11,6 +11,7 @@ class SideBar:
         self.__constants = _constants
 
         self.__fonts = Fonts(self.__constants)
+
         self.__level = 0
         self.__points = 0
         self.__next_tetromino_number = 0
