@@ -82,7 +82,7 @@ class MainMenu:
                             self.__menu_items[selected_menu_item].color = colors.MenuItem.bg_selected
                             self.__menu_items[selected_menu_item + 1].is_selected = False
                             self.__menu_items[selected_menu_item + 1].color = colors.MenuItem.bg_unselected
-                    elif pressed_keys[pg.K_RETURN]:
+                    elif pressed_keys[pg.K_RETURN] or pressed_keys[pg.K_KP_ENTER]:
                         for index in range(len(self.__menu_items)):
                             if self.__menu_items[index].is_selected:
                                 if index == 0:
@@ -173,7 +173,7 @@ class LevelMenu:
                     elif pressed_keys[pg.K_UP] or pressed_keys[pg.K_i]:
                         if self.__level > 1:
                             self.__level -= 1
-                    elif pressed_keys[pg.K_RETURN]:
+                    elif pressed_keys[pg.K_RETURN] or pressed_keys[pg.K_KP_ENTER]:
                         return self.__level
 
             if is_running:
