@@ -14,6 +14,7 @@ class Constants:
         self.level_diff_tetromino_at_bottom_ms = 15
         self.level_diff_drop_tetrominoes_ms = 15
         self.level_diff_has_lost_ms = 15
+
         self.delay_print_game_over_ms = 5000
 
         self.block_size, self.window_width, self.window_height = self.__calc_sizes()

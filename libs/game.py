@@ -11,6 +11,14 @@ from libs.tetrominoes import *
 class Game:
     def __init__(self, _window: pg.Surface, _sidebar: SideBar, _constants: Constants, _all_sprites: pg.sprite.Group,
                  _level: int):
+        """
+        The constructor of class Game
+        :param _window: the main surface for the whole game
+        :param _sidebar: the sidebar that is only visible during gameplay
+        :param _constants: an object of type Constants holding values like sizes and delays
+        :param _all_sprites: a pygame sprite group containing all sprites (frame blocks and tetrominos)
+        :param _level: the starting level representing the difficulty
+        """
         self.__window = _window
         self.__constants = _constants
         self.__all_sprites = _all_sprites
@@ -22,8 +30,8 @@ class Game:
         self.__clock = pg.time.Clock()
         self.__fonts = Fonts(self.__constants)
 
-        self.__removed_rows_per_level = 0
-        self.__removed_rows_total = 0
+        self.__cleared_lines_per_level = 0
+        self.__cleared_lines_total = 0
         self.__points = 0
 
         self.__delay_tetromino_move_down_fps = 0
@@ -35,9 +43,23 @@ class Game:
         self.__calc_delays()
 
     def start(self) -> bool:
+        """
+        Start the main loop from outside
+
+        :return: was the program closed? True|False
+        """
         return self.__game_loop()
 
     def __game_loop(self) -> bool:
+        """
+        The main gameplay loop.
+        "clock.tick(fps)" at the end of the loop ensures that the screen is not redrawn
+        more frequently per second than specified in the fps constant.
+        All delays used to simulate the game speed are fractions of the fps constant calculated in the method
+        "self.__calc_delays()"
+
+        :return: was the program closed? True|False
+        """
         current_tetromino = None
         pg.key.set_repeat(200, 50)
         game_over_tetromino_counter = 0
@@ -190,7 +212,7 @@ class Game:
                         and counter_tetromino_at_bottom == self.__delay_tetromino_at_bottom_fps:
                     if current_tetromino.would_collide_down(self.__all_sprites):
                         self.__change_tetromino_to_single_blocks(current_tetromino)
-                        if self.__remove_full_rows(self.__all_sprites):
+                        if self.__remove_full_lines(self.__all_sprites):
                             do_drop_tetrominoes = True
                             counter_drop_tetrominoes = 0
 
@@ -226,6 +248,12 @@ class Game:
                 return False
 
     def __create_tetromino(self, _number: int) -> Tetromino:
+        """
+        Create a new sprite (as a subclass of class Tetromino) to appear at the top of the window and
+        add it to the sprite group "self.__all_sprites"
+        :param _number: an integer from 1 to 7
+        :return: a sprite (as a subclass of class Tetromino)
+        """
         current_tetromino = None
         if _number == 1:
             current_tetromino = Straight(self.__window, self.__constants, self.__all_sprites)
@@ -252,6 +280,12 @@ class Game:
         return current_tetromino
 
     def __change_tetromino_to_single_blocks(self, _tetromino: Tetromino):
+        """
+        Takes a sprite (as a subclass of class Tetromino) as param and converts each visible block into a
+        seperate sprite, adds the latter to the main sprite group ("self.__all_sprites") and deletes the
+        original tetromino from the sprite group
+        :param _tetromino: a sprite of type Tetromino
+        """
         color = colors.Constants.SCREEN
         if type(_tetromino) == Straight:
             color = colors.TetrominoStraight
@@ -281,50 +315,64 @@ class Game:
                     self.__all_sprites.add(sprite)
         _tetromino.kill()
 
-    def __remove_full_rows(self, _all_sprites: pg.sprite.Group) -> bool:
+    def __remove_full_lines(self, _all_sprites: pg.sprite.Group) -> bool:
+        """
+        Remove all blocks from full lines visibly and from their sprite group
+        :param _all_sprites: the sprite group containing all tetrominoes and frame blocks
+        :return: was at least one line removed? True|False
+        """
         has_removed = False
-        count_removed_rows = 0
+        count_cleared_lines = 0
 
-        for row in range(1, int(self.__constants.playing_area_bottom / self.__constants.block_size) + 1):
-            row_blocks_rect_list = []
+        for line in range(1, int(self.__constants.playing_area_bottom / self.__constants.block_size) + 1):
+            line_blocks_rect_list = []
             for col in range(1, int(self.__constants.playing_area_right / self.__constants.block_size)):
-                rect = pg.rect.Rect((col * self.__constants.block_size, row * self.__constants.block_size,
+                rect = pg.rect.Rect((col * self.__constants.block_size, line * self.__constants.block_size,
                                      self.__constants.block_size, self.__constants.block_size))
                 sprite = SingleBlock(self.__window, self.__constants, self.__all_sprites, colors.TetrominoSquare)
                 sprite.rect = rect
                 colliding_sprite = Tetromino.does_collide(sprite, _all_sprites)
                 if colliding_sprite is not None:
-                    row_blocks_rect_list.append(colliding_sprite)
+                    line_blocks_rect_list.append(colliding_sprite)
 
-            if len(row_blocks_rect_list) == 12:
-                count_removed_rows += 1
-                for colliding_sprite in row_blocks_rect_list:
+            if len(line_blocks_rect_list) == 12:
+                count_cleared_lines += 1
+                for colliding_sprite in line_blocks_rect_list:
                     colliding_sprite.kill()
-                self.__drop_after_remove([x for x in _all_sprites], row * self.__constants.block_size)
+                self.__drop_after_remove([x for x in _all_sprites], line * self.__constants.block_size)
 
-        if count_removed_rows != 0:
+        if count_cleared_lines != 0:
             has_removed = True
-            self.__points += int((count_removed_rows ** 2) * 10)
+            self.__points += int((count_cleared_lines ** 2) * 10)
 
             if self.__level < self.__constants.max_level:
-                self.__removed_rows_per_level += count_removed_rows
-                self.__removed_rows_total += count_removed_rows
-                rows_needed = self.__level - 1 + self.__constants.lines_needed_for_first_level_up
-                if self.__removed_rows_per_level >= rows_needed:
-                    self.__removed_rows_per_level = self.__removed_rows_per_level - rows_needed
+                self.__cleared_lines_per_level += count_cleared_lines
+                self.__cleared_lines_total += count_cleared_lines
+                lines_needed = self.__level - 1 + self.__constants.lines_needed_for_first_level_up
+                if self.__cleared_lines_per_level >= lines_needed:
+                    self.__cleared_lines_per_level = self.__cleared_lines_per_level - lines_needed
                     self.__level += 1
                     self.__calc_delays()
 
         return has_removed
 
     @staticmethod
-    def __drop_after_remove(_all_sprites_list: list, _row: int):
+    def __drop_after_remove(_all_sprites_list: list, _line_num: int):
+        """
+        Drop down all lines above the removed cleared line(s).
+        Takes a list of all sprites (not a sprite group!) and the topmost cleared line as an integer
+        :param _all_sprites_list: the sprite group containing all tetrominoes and frame blocks
+        :param _line_num: int
+        """
         for tetromino in _all_sprites_list:
             if type(tetromino) != FrameBlock:
-                if tetromino.rect.y < _row:
+                if tetromino.rect.y < _line_num:
                     tetromino.move_down()
 
     def __print_game_over(self):
+        """
+        A simple "game over" message when the game is lost, positioned in the top third of the window.
+        """
         text_surface = self.__fonts.game_over.render("game over", True, colors.Constants.RED)
         width = text_surface.get_width()
         height = text_surface.get_height()
@@ -336,7 +384,10 @@ class Game:
         self.__window.blit(text_surface, (x, y))
 
     def __pause_game(self):
-        text_surface = self.__fonts.game_over.render("Game paused", True, colors.Constants.RED)
+        """
+        A simple "game paused" message, positioned in the top third of the window.
+        """
+        text_surface = self.__fonts.game_over.render("game paused", True, colors.Constants.RED)
         width = text_surface.get_width()
         height = text_surface.get_height()
         x = int(round(self.__constants.window_width / 2)) - int(round(width / 2))
@@ -347,6 +398,13 @@ class Game:
         self.__window.blit(text_surface, (x, y))
 
     def __calc_delays(self):
+        """
+        Calculate several delays used during the game, e.g. for the speed of the falling tetrominoes or the pause
+        before a new tetromino appears.
+        Must be run once at game start and again after each level up.
+        Uses constants starting with 'level_diff_' from class Constants which hold integers representing
+        the delays in ms and converts them into a fraction of the fps the game runs at.
+        """
         self.__delay_tetromino_move_down_fps = int(round(
             self.__constants.fps * (500 - (self.__level - 1) *
                                     self.__constants.level_diff_tetromino_move_down_ms) / 1000))
