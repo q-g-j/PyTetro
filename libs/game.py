@@ -359,7 +359,7 @@ class Game:
     @staticmethod
     def __drop_after_remove(_all_sprites_list: list, _line_num: int):
         """
-        Drop down all lines above the removed cleared line(s).
+        Drop down all lines above the cleared line(s).
         Takes a list of all sprites (not a sprite group!) and the topmost cleared line as an integer
         :param _all_sprites_list: the sprite group containing all tetrominoes and frame blocks
         :param _line_num: int
