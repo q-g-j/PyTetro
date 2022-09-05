@@ -18,6 +18,10 @@ class Constants:
         self.delay_print_game_over_ms = 5000
 
         self.block_size, self.window_width, self.window_height = self.__calc_sizes()
+        self.block_offset_x = int(round(self.block_size / 8))
+        self.block_offset_y = self.block_offset_x
+        self.block_inner_rect_width = self.block_size - self.block_offset_x * 2
+        self.block_inner_rect_height = self.block_inner_rect_width
         self.sidebar_left = self.window_width
         self.playing_area_top = 0
         self.playing_area_left = self.block_size

@@ -57,10 +57,10 @@ class FrameBlock(pg.sprite.Sprite):
                                 (self.__constants.block_size - 1, self.__constants.block_size - 1)])
         pg.draw.rect(self.image,
                      color=colors.FrameBlock.fg_square,
-                     rect=(int(round(self.__constants.block_size / 8)),
-                           int(round(self.__constants.block_size / 8)),
-                           int(round(self.__constants.block_size / (4 / 3))),
-                           int(round(self.__constants.block_size / (4 / 3)))))
+                     rect=(self.__constants.block_offset_x,
+                           self.__constants.block_offset_y,
+                           self.__constants.block_inner_rect_width,
+                           self.__constants.block_inner_rect_height))
 
         self.image.set_colorkey(colors.Constants.BLACK)
         self.mask = pg.mask.from_surface(self.image)
