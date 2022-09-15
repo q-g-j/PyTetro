@@ -51,8 +51,8 @@ class Tetromino(pg.sprite.Sprite):
                     )
                     pg.draw.rect(self.image,
                                  color=self.color.fg_square,
-                                 rect=(self.constants.block_offset_x + i * self.constants.block_size,
-                                       self.constants.block_offset_y + j * self.constants.block_size,
+                                 rect=(self.constants.block_inner_rect_offset_x + i * self.constants.block_size,
+                                       self.constants.block_inner_rect_offset_y + j * self.constants.block_size,
                                        self.constants.block_inner_rect_width,
                                        self.constants.block_inner_rect_height))
 

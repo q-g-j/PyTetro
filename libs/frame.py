@@ -57,8 +57,8 @@ class FrameBlock(pg.sprite.Sprite):
                                 (self.__constants.block_size - 1, self.__constants.block_size - 1)])
         pg.draw.rect(self.image,
                      color=colors.FrameBlock.fg_square,
-                     rect=(self.__constants.block_offset_x,
-                           self.__constants.block_offset_y,
+                     rect=(self.__constants.block_inner_rect_offset_x,
+                           self.__constants.block_inner_rect_offset_y,
                            self.__constants.block_inner_rect_width,
                            self.__constants.block_inner_rect_height))
 
